@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 let initialStateValue = {
-  type: "", // modal
   title: "", // title
 };
 

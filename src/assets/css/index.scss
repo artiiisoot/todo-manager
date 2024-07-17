@@ -42,7 +42,41 @@ span {
   line-height: 1;
 }
 
-input {
+.input {
+  span.error-message {
+    font-size: 0.75rem;
+    padding: 0 0.5rem;
+    color: $color-error;
+  }
+}
+
+.select {
+  display: flex;
+  position: relative;
+  select::-ms-expand {
+    display: none;
+  }
+  select {
+    -o-appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    height: 3rem;
+  }
+  i.icons {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: $color-gray-500;
+  }
+}
+
+input,
+select {
   width: 100%;
   height: 3rem;
   padding: 0.5rem 1rem;
@@ -74,10 +108,6 @@ input {
       opacity: 0.5;
     }
   }
-}
-
-input::value {
-
 }
 
 textarea {
@@ -149,6 +179,12 @@ button {
   &.icons {
     padding: 1rem;
     border-radius: 50%;
+
+    &-sm {
+      font-size: 1rem;
+      padding: 0.25rem;
+      min-height: unset;
+    }
   }
 
   &.btn-square-outlined {
@@ -233,8 +269,20 @@ main {
             .result {
               cursor: pointer;
               position: relative;
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 0.5rem;
 
-              p {
+              > div {
+                column-count: auto;
+                gap: 0.5rem;
+                p {
+                  min-height: 1.75rem;
+                  font-size: 0.75rem;
+                }
+              }
+
+              > p {
                 flex: 1;
                 display: inline-block;
                 font-size: 0.75rem;
@@ -243,62 +291,6 @@ main {
                 color: $color-gray-500;
                 padding: 0.5rem;
                 border-radius: 0.25rem;
-              }
-
-              &.state {
-                p {
-                  &.before {
-                    flex: unset;
-                    background: $color-gray-600;
-                    color: $color-white;
-                  }
-                  &.start {
-                    flex: unset;
-                    background: $color-info;
-                    color: $color-white;
-                  }
-                  &.complete {
-                    flex: unset;
-                    background: $color-success;
-                    color: $color-white;
-                  }
-                }
-              }
-
-              &.group {
-                p {
-                  &.default {
-                    flex: unset;
-                    color: $color-gray-800;
-                    background: $color-white;
-                    box-shadow: inset 0 0 0 1px $color-gray-300;
-                  }
-                }
-              }
-
-              &.tag {
-                column-count: auto;
-                gap: 0.5rem;
-
-                .chip {
-                  flex: unset;
-                  display: flex;
-                  align-items: center;
-                  column-count: auto;
-                  gap: 0.25rem;
-                  background: $color-gray-600;
-                  padding: 0.25rem 0.75rem;
-                  border-radius: 6.25rem;
-
-                  p {
-                    color: $color-white;
-                    padding: 0;
-                  }
-                  i {
-                    color: $color-white;
-                    font-size: 0.875rem;
-                  }
-                }
               }
 
               ul.dropdown {
@@ -338,6 +330,8 @@ main {
     .description {
       flex: 1;
       padding: 1rem 0;
+      column-count: auto;
+      gap: 0.5rem;
 
       p {
         font-size: 0.75rem;
@@ -348,7 +342,6 @@ main {
 
       textarea {
         resize: none;
-        // border-radius: 0.25rem;
       }
     }
   }
@@ -367,6 +360,12 @@ main {
   background: $color-primary;
 }
 
+.divider {
+  width: 100%;
+  height: 1px;
+  background: $color-gray-200;
+}
+
 .header-bg {
   position: absolute;
   top: 0;
@@ -375,7 +374,80 @@ main {
   width: 100%;
   height: 14.5rem;
 }
+.state {
+  p {
+    flex: unset !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-count: auto;
+    gap: 0.5rem;
+    min-height: 2rem;
+    font-size: 12px;
+    font-weight: normal;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
 
+    button.icons {
+      // display: none;
+      padding: 0.125rem;
+      font-size: 0.875rem;
+    }
+    &.before {
+      flex: unset;
+      background: $color-gray-600;
+      color: $color-white;
+    }
+    &.start {
+      flex: unset;
+      background: $color-info;
+      color: $color-white;
+    }
+    &.complete {
+      flex: unset;
+      background: $color-success;
+      color: $color-white;
+    }
+  }
+}
+
+.group {
+  p {
+    &.default {
+      flex: unset;
+      color: $color-gray-800;
+      background: $color-white;
+      box-shadow: inset 0 0 0 1px $color-gray-300;
+    }
+  }
+}
+
+.tags {
+  column-count: auto;
+  gap: 0.5rem;
+
+  .chip {
+    flex: unset;
+    display: flex;
+    align-items: center;
+    column-count: auto;
+    gap: 0.25rem;
+    background: $color-gray-600;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6.25rem;
+    width: fit-content;
+    color: $color-white;
+
+    p {
+      color: $color-white;
+      padding: 0;
+    }
+    i {
+      color: $color-white;
+      font-size: 0.875rem;
+    }
+  }
+}
 #Header {
   position: fixed;
   top: 0;
@@ -635,6 +707,19 @@ main {
 
 #TodayCard {
   cursor: pointer;
+
+  &.no-data {
+    outline: 1px dashed $color-gray-300;
+
+    h1 {
+      font-weight: 700;
+      color: $color-gray-500;
+    }
+  }
+
+  p {
+    line-height: 1.4;
+  }
 }
 
 .search-bar {
@@ -691,15 +776,22 @@ main {
         margin-bottom: 1rem;
       }
       .tag {
+        display: flex;
+        column-count: auto;
+        gap: 0.5rem;
         margin-bottom: 0.5rem;
+
+        .chip {
+          padding: 0.25rem 0.5rem;
+        }
       }
       .title {
-        font-size: 0.875rem;
+        font-size: 1rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
       }
       .category {
-        font-size: 0.625rem;
+        font-size: 0.75rem;
         color: $color-gray-500;
       }
     }
@@ -735,12 +827,27 @@ main {
   }
 }
 
-.label-rounded {
-  font-size: 0.625rem;
+.chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  column-count: auto;
+  gap: 0.5rem;
+  font-size: 12px;
+  font-weight: 400;
   color: $color-white;
-  padding: 0.125rem 0.5rem;
+  padding: 0.25rem 1.5rem 0.25rem 0.5rem;
   border-radius: 4rem;
   background: $color-gray-600;
+  max-height: 1.5rem;
+  width: fit-content;
+
+  button.icons {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+  }
 }
 
 .label-square {
@@ -824,6 +931,86 @@ main {
           right: 0;
           transform: translateY(-50%);
         }
+      }
+    }
+  }
+}
+
+#Dialog-AddTags {
+  .modal-body {
+    display: flex;
+    flex-direction: column;
+    column-count: auto;
+    gap: 1rem;
+
+    input {
+      padding: 0.75rem 0.5rem;
+    }
+    .text-item {
+      padding: 0 0.5rem;
+
+      p {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: $color-gray-500;
+      }
+    }
+    .add-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 0.5rem;
+      .left {
+        display: flex;
+        align-items: center;
+        column-count: auto;
+        gap: 0.5rem;
+
+        h5 {
+          font-size: 0.875rem;
+          font-weight: 700;
+        }
+        .chip {
+          padding: 0.25rem 0.5rem;
+        }
+      }
+      .right {
+        button.btn-white {
+          font-size: 0.75rem;
+          min-height: 2.5rem;
+        }
+      }
+    }
+    .item-list {
+      ul {
+        li {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: $color-gray-50;
+          padding: 0.75rem 1rem;
+          border-bottom: 1px solid $color-gray-200;
+
+          > button.icons {
+            min-height: unset;
+            padding: 0.25rem;
+          }
+        }
+      }
+    }
+    .label-list {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      column-count: auto;
+      align-items: center;
+      padding: 0.75rem 0.5rem;
+      gap: 0.5rem;
+      width: fit-content;
+      min-height: 3.5rem;
+
+      .chip {
+        min-width: 2.5rem;
+        justify-content: center;
       }
     }
   }

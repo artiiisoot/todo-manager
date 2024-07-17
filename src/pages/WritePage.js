@@ -1,29 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
-import { getHeaderState } from "../redux/reducers/headerReducer";
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDoc,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
+
+import { getTaskData } from "../redux/reducers/taskReducer";
 
 import { DetailHeader } from "./components/DetailHeader";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
-
+import { SelectOption } from "./components/SelectOption";
+import { DialogAddStates } from "./dialogs/DialogAddStates";
 import { DialogAddTags } from "./dialogs/DialogAddTags";
-import { getModalState } from "../redux/reducers/modalReducer";
+import { DialogAddGroup } from "./dialogs/DialogAddGroup";
 
 export const WritePage = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const title = useSelector((state) => state.header.value.title);
-  const type = useSelector((state) => state.header.value.type);
-  const isDialog = useSelector((state) => state.modal.isDialog);
+  const headerTitle = useSelector((state) => state.header.value.title);
+  const headerType = useSelector((state) => state.header.value.type);
+  const modalType = useSelector((state) => state.modal.value.type);
+  const modalOpen = useSelector((state) => state.modal.value.open);
+  const taskState = useSelector((state) => state.task.value.state);
+  const taskGroup = useSelector((state) => state.task.value.group);
+  const taskTags = useSelector((state) => state.task.value.tags);
 
-  // 제목 입력
-  const [isInputTitle, setIsInputTitle] = useState("");
-  function handleInputTitle(e) {
-    console.log("TITLE", e.target.value);
-    setIsInputTitle(e.target.value);
-  }
-
-  // 카테고리 입력
-  const [isCategory, setIsCategory] = useState([
+  const [categoryList] = useState([
     {
       name: "Task",
     },
@@ -31,145 +39,53 @@ export const WritePage = () => {
       name: "Project",
     },
   ]);
-  const [isCurrentCat, setIsCurrentCat] = useState("");
-  function handleCategory(type) {
-    setIsCurrentCat(type);
-    console.log("CATEGORY", type);
-  }
-
-  // 상태 입력
-  const [isShowSelectState, setIsShowSelectState] = useState(false);
-  const [isSelectState, setIsSelectState] = useState({
-    name: "Empty",
-    type: "empty",
-  });
-  const [isTaskState, setIsTaskState] = useState([
-    {
-      name: "시작 전",
-      type: "before",
-    },
-    {
-      name: "진행중",
-      type: "start",
-    },
-    {
-      name: "완료",
-      type: "complete",
-    },
-  ]);
-  function showSelectState(e) {
-    e.preventDefault();
-    setIsShowSelectState(!isShowSelectState);
-    setIsShowSelectGroup(false);
-  }
-  function handleSelectState(name, type) {
-    console.log("STATE", name);
-    setIsSelectState({ name, type });
-    setIsShowSelectState(false);
-  }
-
-  // 그룹 입력
-  const [isShowSelectGroup, setIsShowSelectGroup] = useState(false);
-  const [isSelectGroup, setIsSelectGroup] = useState({
-    name: "Empty",
-    type: "empty",
-  });
-  const [isTaskGroup, setIsTaskGroup] = useState([
-    {
-      name: "Home",
-      type: "default",
-    },
-    {
-      name: "Business",
-      type: "default",
-    },
-  ]);
-  function showSelectGroup(e) {
-    e.preventDefault();
-    setIsShowSelectGroup(!isShowSelectGroup);
-    setIsShowSelectState(false);
-    setIsShowSelectTag(false);
-  }
-  function handleSelectGroup(name, type) {
-    setIsSelectGroup({ name, type });
-    setIsShowSelectGroup(false);
-    setIsShowSelectTag(false);
-    console.log("GROUP", name);
-  }
-  function handleAddGroup() {
-    console.log("추가하기");
-  }
-
-  // 태그 입력
-  const [isShowSelectTag, setIsShowSelectTag] = useState(false);
-  const [isShowAddTag, setIsShowAddTag] = useState(false);
-  const [isSelectTag, setIsSelectTag] = useState({
-    name: "Empty",
-    type: "empty",
-  });
-  const [isTaskTag, setIsTaskTag] = useState([]);
-  function showSelectTag(e) {
-    e.preventDefault();
-    setIsShowSelectTag(!isShowSelectTag);
-    setIsShowSelectGroup(false);
-    setIsShowSelectState(false);
-  }
-  function handleSelectTag(name) {
-    console.log("NAME", name);
-    setIsTaskTag([...isTaskTag, { name: name }]);
-  }
-  function handleAddTag() {
-    dispatch(getHeaderState({ title: "Add Tags" }));
-    dispatch(getModalState({ isDialog: true }));
-    console.log("태그추가");
-  }
-
-  // 디스크립션 입력
-  const [isInputDesc, setIsInputDesc] = useState("");
-  function handleInputDesc(e) {
-    console.log(e.target.value);
-    setIsInputDesc(e.target.value);
-  }
+  const [taskTitle, setTaskTitle] = useState("");
+  const [taskCategory, setTaskCategory] = useState("");
+  const [taskDesc, setTaskDesc] = useState("");
 
   async function submitTaskData() {
     const db = getFirestore();
-    const docRef = await addDoc(collection(db, "tasks"), {
-      title: isInputTitle,
-      category: isCurrentCat,
-      state: isSelectState,
-      group: isSelectGroup,
-      tags: isSelectTag,
-      description: isInputDesc,
+
+    await addDoc(collection(db, "tasks"), {
+      title: taskTitle,
+      category: taskCategory,
+      state: taskState,
+      group: taskGroup,
+      tags: taskTags,
+      description: taskDesc,
+      createDate: serverTimestamp(),
     });
 
-    console.log("docRef.id", docRef.id);
+    setTaskTitle("");
+    setTaskCategory("");
+    setTaskDesc("");
+    dispatch(getTaskData({ state: "", group: "", tags: [] }));
   }
   return (
     <>
-      {console.log("isDialog", isDialog)}
-      <DetailHeader title={title} type={type} />
+      <DetailHeader title={headerTitle} type={headerType} />
 
       <main className="document">
         <div className="title">
           <input
             type="text"
             placeholder="Untitle"
-            value={isInputTitle}
-            onChange={handleInputTitle}
+            value={taskTitle}
+            onChange={(e) => setTaskTitle(e.target.value)}
           />
         </div>
 
         <div className="tab-group flex flex-row items-center">
-          {isCategory.map((tab, idx) => (
+          {categoryList.map((item, idx) => (
             <button
               className={`btn-square-outlined ${
-                isCurrentCat === tab.name ? "active" : null
+                taskCategory === item.name ? "active" : null
               }`}
               key={idx}
-              value={tab.name}
-              onClick={() => handleCategory(tab.name)}
+              value={item.name}
+              onClick={() => setTaskCategory(item.name)}
             >
-              {tab.name}
+              {item.name}
             </button>
           ))}
         </div>
@@ -179,99 +95,17 @@ export const WritePage = () => {
             <ul>
               <li className="flex items-center">
                 <p className="title">State</p>
-
-                <div
-                  className="state result flex flex-1 items-center"
-                  onClick={showSelectState}
-                >
-                  <p className={`label ${isSelectState.type}`}>
-                    {isSelectState.name}
-                  </p>
-
-                  {isShowSelectState ? (
-                    <ul className="dropdown">
-                      {isTaskState.map((state, idx) => (
-                        <li
-                          onClick={() =>
-                            handleSelectState(state.name, state.type)
-                          }
-                          key={idx}
-                        >
-                          <p className={state.type}>{state.name}</p>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
-                </div>
+                <SelectOption id="state" items={taskState} />
               </li>
 
               <li className="flex items-center">
                 <p className="title">Group</p>
-
-                <div
-                  className="group result flex flex-1 items-center"
-                  onClick={showSelectGroup}
-                >
-                  <p className={isSelectGroup.type}>{isSelectGroup.name}</p>
-
-                  {isShowSelectGroup ? (
-                    <ul className="dropdown">
-                      {isTaskGroup.map((group, idx) => (
-                        <li
-                          onClick={() =>
-                            handleSelectGroup(group.name, group.type)
-                          }
-                          key={idx}
-                        >
-                          <p className={group.type}>{group.name}</p>
-                        </li>
-                      ))}
-
-                      <li onClick={handleAddGroup}>
-                        <p>추가하기</p>
-                      </li>
-                    </ul>
-                  ) : null}
-                </div>
+                <SelectOption id="group" items={taskGroup} />
               </li>
 
               <li className="flex items-center">
                 <p className="title">Tags</p>
-
-                <div
-                  className="tag result flex flex-1 items-center"
-                  onClick={showSelectTag}
-                >
-                  {isTaskTag.length > 0 ? (
-                    isTaskTag.map((tag, idx) => (
-                      <div className="chip" key={idx}>
-                        <p>{tag.name}</p>
-                        <i className="icon material-icons-outlined">close</i>
-                      </div>
-                    ))
-                  ) : (
-                    <p>{isSelectTag.name}</p>
-                  )}
-
-                  {isShowSelectTag ? (
-                    <ul className="dropdown">
-                      {isTaskTag.map((tag, idx) => (
-                        <li onClick={() => handleSelectTag(tag.name)} key={idx}>
-                          <div className="chip">
-                            <p>{tag.name}</p>
-                            <i className="icon material-icons-outlined">
-                              close
-                            </i>
-                          </div>
-                        </li>
-                      ))}
-
-                      <li onClick={handleAddTag}>
-                        <p>추가하기</p>
-                      </li>
-                    </ul>
-                  ) : null}
-                </div>
+                <SelectOption id="tags" items={taskTags} />
               </li>
             </ul>
           </div>
@@ -285,21 +119,22 @@ export const WritePage = () => {
             id="description"
             className="outlined flex-1"
             placeholder="Add for the description"
-            value={isInputDesc}
-            onChange={handleInputDesc}
+            value={taskDesc}
+            onChange={(e) => setTaskDesc(e.target.value)}
           ></textarea>
         </div>
 
         <div className="button-group flex flex-row justify-end">
-          <button>aaaaa</button>
-          <button>CANCEL</button>
+          <button onClick={() => navigate(-1)}>CANCEL</button>
           <button className="btn-flat primary" onClick={submitTaskData}>
             DONE
           </button>
         </div>
       </main>
 
-      {isDialog.isDialog && <DialogAddTags title="Add Tags" />}
+      {modalOpen && modalType === "state" ? <DialogAddStates /> : null}
+      {modalOpen && modalType === "group" ? <DialogAddGroup /> : null}
+      {modalOpen && modalType === "tag" ? <DialogAddTags /> : null}
     </>
   );
 };

@@ -1,8 +1,10 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-export const DetailHeader = ({ title }) => {
+export const DetailHeader = () => {
   const navigate = useNavigate();
+  const title = useSelector((state) => state.header.value.title);
 
   const handleBack = () => {
     navigate(-1);

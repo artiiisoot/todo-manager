@@ -1,16 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-let initialState = {
-  isDialog: false,
+let initialStateValue = {
+  type: "",
+  title: "",
+  open: false,
 };
 
 const modalSlice = createSlice({
   name: "modal",
-  initialState,
+  initialState: { value: initialStateValue },
   reducers: {
     getModalState(state, action) {
       console.log("Enter the Success is Modal State");
-      state.isDialog = action.payload;
+      state.value = action.payload;
     },
   },
 });

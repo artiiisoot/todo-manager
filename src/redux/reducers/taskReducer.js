@@ -1,8 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-let initialState = {
-  title: "",
-  type: "",
+let initialStateValue = {
   state: "",
   group: "",
   tags: [],
@@ -10,15 +8,30 @@ let initialState = {
 
 const taskSlice = createSlice({
   name: "task",
-  initialState,
+  initialState: { value: initialStateValue },
   reducers: {
-    getTitle(state, action) {
-      console.log("TITLE 입력");
-      console.log("state.title", state.title);
-      state.title = action.payload;
+    getState(state, action) {
+      console.log("state.state", state.value.state);
+      state.value.state = action.payload;
+    },
+    getGroup(state, action) {
+      console.log("state.group", state.value.group);
+      state.value.group = action.payload;
+    },
+    getTags(state, action) {
+      console.log(
+        "state.tags",
+        state.value.tags.map((item) => item.name)
+      );
+      state.value.tags = action.payload;
+    },
+
+    getTaskData(state, action) {
+      state.value = action.payload;
     },
   },
 });
 
-export const taskActions = taskSlice.actions;
+export const { getTaskData, getTitle, getState, getGroup, getTags } =
+  taskSlice.actions;
 export default taskSlice.reducer;

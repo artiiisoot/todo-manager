@@ -57,7 +57,7 @@ export const Tabbar = () => {
 
   function handleWrite() {
     navigate("/write");
-    dispatch(getHeaderState({ type: "detail", title: "Tasks"}))
+    dispatch(getHeaderState({ title: "Tasks" }));
   }
 
   return (
