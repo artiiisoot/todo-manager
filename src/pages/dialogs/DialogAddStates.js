@@ -68,7 +68,7 @@ export const DialogAddStates = () => {
     console.log("state", taskState);
   }, [taskState]);
   return (
-    <div id="Dialog-AddTags" className="modal">
+    <div id="Dialog-AddState" className="modal">
       <div className="modal-dialog">
         <div className="modal-header">
           <ModalHeader />

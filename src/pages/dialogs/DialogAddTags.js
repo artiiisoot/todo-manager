@@ -38,7 +38,7 @@ export const DialogAddTags = () => {
     dispatch(getTags(result));
   }
   async function handleAddTag() {
-    await addDoc(collection(db, "tags"), {
+    await addDoc(dbTags, {
       name: isTag,
     });
     setIsTag("");
@@ -65,7 +65,7 @@ export const DialogAddTags = () => {
   }, [taskTags]);
 
   return (
-    <div id="Dialog-AddTags" className="modal">
+    <div id="Dialog-AddState" className="modal">
       <div className="modal-dialog">
         <div className="modal-header">
           <ModalHeader />

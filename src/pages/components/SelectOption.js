@@ -34,7 +34,7 @@ export const SelectOption = ({ id, items }) => {
   //   console.log("items", items);
   // },[items])
   return (
-    <div className="result" onClick={handleAdd}>
+    <div className={`result ${id}`} onClick={handleAdd}>
       {id === "state" && (
         <>
           {items ? (

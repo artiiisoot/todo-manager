@@ -208,6 +208,20 @@ button {
       color: $color-primary;
     }
   }
+  &.btn-add {
+    display: flex;
+    align-items: center;
+    column-count: auto;
+    gap: 0.25rem;
+    padding: 0.75rem 0.5rem;
+    font-weight: normal;
+    color: $color-gray-500;
+    text-align: left;
+
+    i.icons {
+      font-size: 0.875rem;
+    }
+  }
   &:invalid {
     color: $color-black;
   }
@@ -273,12 +287,19 @@ main {
               grid-template-columns: repeat(4, 1fr);
               gap: 0.5rem;
 
+              &.state,
+              &.group {
+                display: flex;
+              }
+
               > div {
+                grid-area: auto;
                 column-count: auto;
                 gap: 0.5rem;
                 p {
                   min-height: 1.75rem;
                   font-size: 0.75rem;
+                  justify-content: center;
                 }
               }
 
@@ -383,7 +404,7 @@ main {
     column-count: auto;
     gap: 0.5rem;
     min-height: 2rem;
-    font-size: 12px;
+    font-size: 0.75rem;
     font-weight: normal;
     padding: 0.25rem 0.75rem;
     border-radius: 0.25rem;
@@ -413,12 +434,20 @@ main {
 
 .group {
   p {
-    &.default {
-      flex: unset;
-      color: $color-gray-800;
-      background: $color-white;
-      box-shadow: inset 0 0 0 1px $color-gray-300;
-    }
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-count: auto;
+    gap: 0.5rem;
+    min-height: 2rem;
+    font-size: 0.875rem;
+    font-weight: normal;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    box-shadow: inset 0 0 0 1px $color-gray-300;
+    flex: unset;
+    color: $color-gray-800;
+    background: $color-white;
   }
 }
 
@@ -936,7 +965,7 @@ main {
   }
 }
 
-#Dialog-AddTags {
+#Dialog-AddState {
   .modal-body {
     display: flex;
     flex-direction: column;
@@ -997,6 +1026,12 @@ main {
           }
         }
       }
+
+      .group-item {
+        font-size: 0.875rem;
+        font-weight: 700;
+        padding: 1rem;
+      }
     }
     .label-list {
       display: grid;
@@ -1011,6 +1046,21 @@ main {
       .chip {
         min-width: 2.5rem;
         justify-content: center;
+      }
+    }
+    .group-list {
+      h5 {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: $color-gray-500;
+        padding: 0.25rem 0.5rem;
+      }
+      ul {
+        li {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
       }
     }
   }

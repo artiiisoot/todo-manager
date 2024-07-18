@@ -11,12 +11,12 @@ export const TodayCard = ({ task, id }) => {
   let day = date.getDate();
   let month = date.getMonth() + 1;
   let year = date.getFullYear();
+  let stringified = task.createDate.toDate().toISOString();
+  var split1 = stringified.split("T");
+  var time = split1[1].split(".");
 
   const formatDate = `${year}/${month}/${day}`;
-
-  useEffect(() => {
-    console.log(year);
-  }, []);
+  const formatTime = time[0];
 
   return (
     <div id="TodayCard" className="content-item button-effect">
@@ -36,7 +36,7 @@ export const TodayCard = ({ task, id }) => {
         <div className="create-date flex">
           <p className="pr-2">Date</p>
           <div className="date-item flex flex-1 justify-between">
-            <p>00:00 A/PM - 00:00 A/PM</p>
+            <p style={{ visibility: "hidden" }}>{formatTime}</p>
             <p>{formatDate}</p>
           </div>
         </div>
