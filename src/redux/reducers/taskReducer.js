@@ -29,9 +29,28 @@ const taskSlice = createSlice({
     getTaskData(state, action) {
       state.value = action.payload;
     },
+    getProjectData(state, action) {
+      state.value = action.payload;
+    },
   },
 });
 
-export const { getTaskData, getTitle, getState, getGroup, getTags } =
+export const { getTaskData, getProjectData, getTitle, getState, getGroup, getTags } =
   taskSlice.actions;
 export default taskSlice.reducer;
+
+export function getTransName(name) {
+  switch (name) {
+    case "before":
+      return "시작전";
+
+    case "start":
+      return "진행중";
+
+    case "complete":
+      return "완료";
+
+    default:
+      return name;
+  }
+}

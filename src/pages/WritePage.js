@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -6,12 +6,19 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getFirestore,
   collection,
+  doc,
   addDoc,
-  getDoc,
-  getDocs,
+  updateDoc,
   serverTimestamp,
 } from "firebase/firestore";
 
+import {
+  getStorage,
+  uploadBytes,
+  ref,
+  getDownloadURL,
+  uploadString,
+} from "firebase/storage";
 import { getTaskData } from "../redux/reducers/taskReducer";
 
 import { DetailHeader } from "./components/DetailHeader";
@@ -19,6 +26,8 @@ import { SelectOption } from "./components/SelectOption";
 import { DialogAddStates } from "./dialogs/DialogAddStates";
 import { DialogAddTags } from "./dialogs/DialogAddTags";
 import { DialogAddGroup } from "./dialogs/DialogAddGroup";
+
+import { v4 as uuidv4 } from "uuid";
 
 export const WritePage = () => {
   const navigate = useNavigate();
@@ -42,25 +51,87 @@ export const WritePage = () => {
   const [taskTitle, setTaskTitle] = useState("");
   const [taskCategory, setTaskCategory] = useState("");
   const [taskDesc, setTaskDesc] = useState("");
+  const [docIdRef, setDocIdRef] = useState("");
+  const imageRef = useRef(null);
+  const [images, setImages] = useState([]);
+
+  const db = getFirestore();
+  const storage = getStorage();
 
   async function submitTaskData() {
-    const db = getFirestore();
+    if (taskCategory === "Task") {
+      await addDoc(collection(db, "tasks"), {
+        title: taskTitle,
+        category: taskCategory,
+        state: taskState,
+        group: taskGroup,
+        tags: taskTags,
+        description: taskDesc,
+        createDate: serverTimestamp(),
+      });
 
-    await addDoc(collection(db, "tasks"), {
-      title: taskTitle,
-      category: taskCategory,
-      state: taskState,
-      group: taskGroup,
-      tags: taskTags,
-      description: taskDesc,
-      createDate: serverTimestamp(),
-    });
+      setTaskTitle("");
+      setTaskCategory("");
+      setTaskDesc("");
+      dispatch(getTaskData({ state: "", group: "", tags: [] }));
+      navigate("/");
+    }
+    if (taskCategory === "Project") {
+      const docRef = await addDoc(collection(db, "projects"), {
+        title: taskTitle,
+        category: taskCategory,
+        state: taskState,
+        group: taskGroup,
+        tags: taskTags,
+        description: taskDesc,
+        createDate: serverTimestamp(),
+      });
 
-    setTaskTitle("");
-    setTaskCategory("");
-    setTaskDesc("");
-    dispatch(getTaskData({ state: "", group: "", tags: [] }));
+      // const imageRef = ref(storage, `images/${docRef?.id}/${images.name}`);
+      // images?.map((img) =>
+      //   uploadBytes(imageRef, img, "data_url").then(async () => {
+      //     const downloadURL = await getDownloadURL(imageRef);
+      //     await updateDoc(doc(db, "projects", docRef.id), {
+      //       image: downloadURL,
+      //     });
+      //   })
+      // );
+    }
   }
+
+  function onFileChange(e) {
+    const files = e.target.files;
+    const theFile = files[0];
+
+    // FileReader 생성
+    const reader = new FileReader();
+    // file 업로드가 완료되면 실행
+    reader.onloadend = (e) => {
+      // 업로드한 이미지 URL 저장
+      const result = e.currentTarget.result;
+
+      console.log("result", result);
+
+      setImages([...images, result]);
+    };
+    // 파일 정보를 읽기
+    reader.readAsDataURL(theFile);
+
+    
+  }
+
+  // const onSubmit = async (evt) => {
+  //   evt.preventDefault();
+  //   const fileRef = ref(storage, uuidv4());
+  //   const response = await uploadString(fileRef, images, "data_url");
+  //   console.log(response);
+  // };
+
+  // useEffect(() => {
+  //   console.log("images", images);
+  //   console.log("images", );
+  // }, [images]);
+
   return (
     <>
       <DetailHeader title={headerTitle} type={headerType} />
@@ -124,8 +195,41 @@ export const WritePage = () => {
           ></textarea>
         </div>
 
+        <div className="upload">
+          <div className="grid grid-cols-4  gap-4">
+            {images.length > 3 ? null : (
+              <label htmlFor="file">
+                <button
+                  className="btn-file icon material-icons-outlined"
+                  onClick={() => imageRef.current?.click()}
+                >
+                  add
+                </button>
+
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  id="file"
+                  className="input-hidden"
+                  ref={imageRef}
+                  onChange={onFileChange}
+                />
+              </label>
+            )}
+
+            {images.length > 0 &&
+              images.map((img) => (
+                <div className="preview-img">
+                  <img src={img} alt="이미지 파일" />
+                </div>
+              ))}
+          </div>
+        </div>
+
         <div className="button-group flex flex-row justify-end">
           <button onClick={() => navigate(-1)}>CANCEL</button>
+          {/* <button className="btn-flat primary" onClick={onSubmit}> */}
           <button className="btn-flat primary" onClick={submitTaskData}>
             DONE
           </button>

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getStateList,
   getTransName,
-} from "../../redux/reducers/stateListReducer";
+} from "../../redux/reducers/taskReducer";
 
 import { getState } from "../../redux/reducers/taskReducer";
 
@@ -42,11 +42,16 @@ export const DialogAddStates = () => {
     setIsState("");
   }
 
-  async function handleDeleteState(e, id) {
-    console.log("e", e);
-    console.log("id", id);
-    e.stopPropagation();
+  function handleDeleteStateList(e, name) {
+    e.preventDefault();
 
+    if (taskState.name === name) {
+      dispatch(getState(null));
+    }
+  }
+
+  async function handleDeleteState(e, id) {
+    e.stopPropagation();
     try {
       await deleteDoc(doc(db, "states", id));
     } catch (error) {
@@ -64,9 +69,6 @@ export const DialogAddStates = () => {
       return setStateData(getStateData);
     });
   }, []);
-  useEffect(() => {
-    console.log("state", taskState);
-  }, [taskState]);
   return (
     <div id="Dialog-AddState" className="modal">
       <div className="modal-dialog">
@@ -81,7 +83,7 @@ export const DialogAddStates = () => {
                   {getTransName(taskState.name)}
                   <button
                     className="icons icons-sm material-icons-outlined"
-                    onClick={(e) => handleDeleteState(e, taskState.id)}
+                    onClick={(e) => handleDeleteStateList(e, taskState.name)}
                   >
                     close
                   </button>
@@ -89,6 +91,7 @@ export const DialogAddStates = () => {
               </div>
             </div>
           ) : (
+            //// ADMIN일때만 오픈 ////
             // <div className="select">
             //   <select
             //     value={isState}
@@ -110,7 +113,9 @@ export const DialogAddStates = () => {
             <p>Select an option or create one</p>
           </div>
 
-          {/* {isState && (
+          {/*
+            //// ADMIN일때만 오픈 ////
+            {isState && (
             <div className="add-item">
               <div className="left">
                 <h5>Create</h5>

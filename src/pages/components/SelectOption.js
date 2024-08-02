@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { getTransName } from "../../redux/reducers/stateListReducer";
+import { getTransName } from "../../redux/reducers/taskReducer";
 import { getModalState } from "../../redux/reducers/modalReducer";
 
 export const SelectOption = ({ id, items }) => {
   const dispatch = useDispatch();
-  // const state = useSelector((state) => state.task.value.state);
-  // const group = useSelector((state) => state.task.value.group);
-  // const tags = useSelector((state) => state.task.value.tags);
 
   function handleAdd() {
     switch (id) {
@@ -30,11 +27,11 @@ export const SelectOption = ({ id, items }) => {
         break;
     }
   }
-  // useEffect(()=>{
-  //   console.log("items", items);
-  // },[items])
   return (
-    <div className={`result ${id}`} onClick={handleAdd}>
+    <div
+      className={`result ${id === "tags" ? "" : "flex"}`}
+      onClick={handleAdd}
+    >
       {id === "state" && (
         <>
           {items ? (
@@ -51,7 +48,7 @@ export const SelectOption = ({ id, items }) => {
         <>
           {items ? (
             <div className={id}>
-              <p className={items.type}>{items.name}</p>
+              <p className="ellipsis-1">{items.name}</p>
             </div>
           ) : (
             <p>Empty</p>
@@ -63,10 +60,8 @@ export const SelectOption = ({ id, items }) => {
         <>
           {items.length > 0 ? (
             items.map((item, idx) => (
-              <div className={id}>
-                <p className="chip" key={idx}>
-                  {item.name}
-                </p>
+              <div className={`chip ${id}`} key={idx}>
+                <p className="ellipsis-1">{item.name}</p>
               </div>
             ))
           ) : (

@@ -7,11 +7,8 @@ import { getModalState } from "../../redux/reducers/modalReducer";
 import {
   collection,
   getFirestore,
-  doc,
   addDoc,
-  getDocs,
   onSnapshot,
-  deleteDoc,
 } from "firebase/firestore";
 
 import { ModalHeader } from "./components/ModalHeader";
@@ -67,16 +64,13 @@ export const DialogAddGroup = () => {
               {groupData
                 ? groupData.map((item, idx) => (
                     <li onClick={() => handleGroupList(item.name)} key={idx}>
-                      <p>{item.name}</p>
+                      <p className="ellipsis-1">{item.name}</p>
                       <button className="icons icons-sm material-icons-outlined">
                         close
                       </button>
                     </li>
                   ))
                 : null}
-              {/* <li>HOME</li>
-              <li>HOME</li>
-              <li>HOME</li> */}
             </ul>
           </div>
 
@@ -108,70 +102,6 @@ export const DialogAddGroup = () => {
             </div>
           )}
         </div>
-        {/* <div className="modal-body">
-          {taskGroup ? (
-            <div className="label-list">
-              <div className="group">
-                <p className="default">
-                  {taskGroup.name}
-                  <button className="icons icons-sm material-icons-outlined">
-                    close
-                  </button>
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="input">
-              <input
-                type="text"
-                placeholder="Search for the option"
-                value={isGroup}
-                onChange={(e) => setIsGroup(e.target.value)}
-              />
-              {showErrMsg && (
-                <span className="error-message">error message</span>
-              )}
-            </div>
-          )}
-
-          <div className="divider"></div>
-          <div className="text-item">
-            <p>Select an option or create one</p>
-          </div>
-
-          {isGroup && (
-            <div className="add-item">
-              <div className="left">
-                <h5>Create</h5>
-                <div>{isGroup}</div>
-              </div>
-              <div className="right">
-                <button className="btn-white" onClick={handleAddGroup}>
-                  Add
-                </button>
-              </div>
-            </div>
-          )}
-
-          {groupData && (
-            <div className="item-list">
-              <ul>
-                {groupData.map((item, idx) => (
-                  <li
-                    className="group-item"
-                    onClick={(e) => handleGroupList(item.name)}
-                    key={idx}
-                  >
-                    <p>{item.name}</p>
-                    <button className="icons icons-sm material-icons-outlined">
-                      close
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div> */}
       </div>
     </div>
   );

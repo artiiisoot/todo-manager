@@ -23,9 +23,9 @@ export const TodayCard = ({ task, id }) => {
       <div className="card-top">
         <div className="tag">
           {Array.from(task.tags).map((tag, idx) => (
-            <span className="chip" key={idx}>
-              {tag.name}
-            </span>
+            <div className="chip" key={idx}>
+              <p className="ellipsis-1">{tag.name}</p>
+            </div>
           ))}
         </div>
         <p className="title">{task.title}</p>

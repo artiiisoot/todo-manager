@@ -25,6 +25,10 @@ export const DialogAddTags = () => {
   const taskTags = useSelector((state) => state.task.value.tags);
 
   function handleTag(e) {
+    if(e.target.value.length > 20) {
+      alert('20자 이상 입력할 수 없어요')
+      return false
+    }
     setIsTag(e.target.value);
   }
   function handleTagList(item) {
@@ -74,8 +78,8 @@ export const DialogAddTags = () => {
           {taskTags.length > 0 ? (
             <div className="label-list">
               {taskTags.map((item, idx) => (
-                <div className="chip" key={idx}>
-                  {item.name}
+                <div className="chip " key={idx}>
+                  <p className="ellipsis-1">{item.name}</p>
                   <button
                     className="icons icons-sm material-icons-outlined"
                     onClick={(e) => handleDeleteTagList(e, idx)}
@@ -125,7 +129,7 @@ export const DialogAddTags = () => {
                 {tagData.map((item, idx) => (
                   <li onClick={() => handleTagList(item.name)} key={idx}>
                     <div className="chip">
-                      {item.name}
+                      <p className="ellipsis-1">{item.name}</p>
                       <button
                         className="icons icons-sm material-icons-outlined"
                         onClick={() => handleDeleteTag(item.id)}
