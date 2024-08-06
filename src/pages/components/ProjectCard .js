@@ -71,12 +71,14 @@ export const ProjectCard = ({ project, id }) => {
 
     // return () => fetchDocumentIds();
     getStaticProps();
+
+    console.log("project.image", project.image);
   }, []);
 
   return (
     <div id="ProjectCard" className="content-item button-effect">
       <div className="card-img">
-        <img src="https://placehold.co/1000" alt="project_img" />
+        <img src={project.image} alt="project_img" />
       </div>
       <div className="card-top">
         <div className="tag">

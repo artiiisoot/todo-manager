@@ -18,6 +18,7 @@ import {
   ref,
   getDownloadURL,
   uploadString,
+  uploadBytesResumable,
 } from "firebase/storage";
 import { getTaskData } from "../redux/reducers/taskReducer";
 
@@ -53,7 +54,9 @@ export const WritePage = () => {
   const [taskDesc, setTaskDesc] = useState("");
   const [docIdRef, setDocIdRef] = useState("");
   const imageRef = useRef(null);
+  const [prevImages, setPrevImages] = useState([]);
   const [images, setImages] = useState([]);
+  const [urls, setUrls] = useState([]);
 
   const db = getFirestore();
   const storage = getStorage();
@@ -87,15 +90,36 @@ export const WritePage = () => {
         createDate: serverTimestamp(),
       });
 
-      // const imageRef = ref(storage, `images/${docRef?.id}/${images.name}`);
-      // images?.map((img) =>
-      //   uploadBytes(imageRef, img, "data_url").then(async () => {
-      //     const downloadURL = await getDownloadURL(imageRef);
-      //     await updateDoc(doc(db, "projects", docRef.id), {
-      //       image: downloadURL,
-      //     });
-      //   })
-      // );
+      // 이미지 업로드
+      const uploadPromises = [];
+      for (let i = 0; i < images.length; i++) {
+        const image = images[i];
+        const storageRef = ref(storage, `images/${docRef?.id}/${image.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, image);
+
+        uploadPromises.push(
+          new Promise((resolve, reject) => {
+            uploadTask.on(
+              "state_changed",
+              null,
+              (error) => {
+                console.error(error);
+                reject(error);
+              },
+              async () => {
+                const downloadURL = await getDownloadURL(
+                  uploadTask.snapshot.ref
+                );
+                await updateDoc(doc(db, "projects", docRef.id), {
+                  image: downloadURL,
+                });
+                setUrls((prevUrls) => [...prevUrls, downloadURL]);
+                resolve(downloadURL);
+              }
+            );
+          })
+        );
+      }
     }
   }
 
@@ -109,28 +133,18 @@ export const WritePage = () => {
     reader.onloadend = (e) => {
       // 업로드한 이미지 URL 저장
       const result = e.currentTarget.result;
-
-      console.log("result", result);
-
-      setImages([...images, result]);
+      setPrevImages([...prevImages, result]);
     };
     // 파일 정보를 읽기
     reader.readAsDataURL(theFile);
 
-    
+    setImages([...images, theFile]);
   }
 
-  // const onSubmit = async (evt) => {
-  //   evt.preventDefault();
-  //   const fileRef = ref(storage, uuidv4());
-  //   const response = await uploadString(fileRef, images, "data_url");
-  //   console.log(response);
-  // };
-
-  // useEffect(() => {
-  //   console.log("images", images);
-  //   console.log("images", );
-  // }, [images]);
+  useEffect(() => {
+    console.log("prevImages", prevImages);
+    console.log("images", images);
+  }, [images, prevImages]);
 
   return (
     <>
@@ -197,7 +211,7 @@ export const WritePage = () => {
 
         <div className="upload">
           <div className="grid grid-cols-4  gap-4">
-            {images.length > 3 ? null : (
+            {prevImages.length > 3 ? null : (
               <label htmlFor="file">
                 <button
                   className="btn-file icon material-icons-outlined"
@@ -218,8 +232,8 @@ export const WritePage = () => {
               </label>
             )}
 
-            {images.length > 0 &&
-              images.map((img) => (
+            {prevImages.length > 0 &&
+              prevImages.map((img) => (
                 <div className="preview-img">
                   <img src={img} alt="이미지 파일" />
                 </div>
@@ -229,7 +243,6 @@ export const WritePage = () => {
 
         <div className="button-group flex flex-row justify-end">
           <button onClick={() => navigate(-1)}>CANCEL</button>
-          {/* <button className="btn-flat primary" onClick={onSubmit}> */}
           <button className="btn-flat primary" onClick={submitTaskData}>
             DONE
           </button>
