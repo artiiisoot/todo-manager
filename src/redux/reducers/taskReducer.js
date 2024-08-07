@@ -1,6 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 let initialStateValue = {
+  categoryList: [
+    {
+      name: "Project",
+    },
+    {
+      name: "Today",
+    },
+  ],
+  category: null,
   state: "",
   group: "",
   tags: [],
@@ -10,6 +19,9 @@ const taskSlice = createSlice({
   name: "task",
   initialState: { value: initialStateValue },
   reducers: {
+    getCategory(state, action) {
+      state.value.category = action.payload;
+    },
     getState(state, action) {
       console.log("state.state", state.value.state);
       state.value.state = action.payload;
@@ -25,18 +37,28 @@ const taskSlice = createSlice({
       );
       state.value.tags = action.payload;
     },
-
     getTaskData(state, action) {
       state.value = action.payload;
     },
     getProjectData(state, action) {
       state.value = action.payload;
     },
+    resetState(state) {
+      state.value = initialStateValue;
+    },
   },
 });
 
-export const { getTaskData, getProjectData, getTitle, getState, getGroup, getTags } =
-  taskSlice.actions;
+export const {
+  getTaskData,
+  getProjectData,
+  getCategory,
+  getTitle,
+  getState,
+  getGroup,
+  getTags,
+  resetState,
+} = taskSlice.actions;
 export default taskSlice.reducer;
 
 export function getTransName(name) {

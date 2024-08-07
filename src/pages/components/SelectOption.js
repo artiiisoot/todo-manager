@@ -27,6 +27,10 @@ export const SelectOption = ({ id, items }) => {
         break;
     }
   }
+
+  useEffect(() => {
+    console.log("items", items);
+  }, [items]);
   return (
     <div
       className={`result ${id === "tags" ? "" : "flex"}`}
@@ -58,7 +62,7 @@ export const SelectOption = ({ id, items }) => {
 
       {id === "tags" && (
         <>
-          {items.length > 0 ? (
+          {items && items.length > 0 ? (
             items.map((item, idx) => (
               <div className={`chip ${id}`} key={idx}>
                 <p className="ellipsis-1">{item.name}</p>

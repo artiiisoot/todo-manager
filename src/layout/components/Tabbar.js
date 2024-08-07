@@ -27,7 +27,7 @@ export const Tabbar = () => {
       id: 3,
       name: "format_list_bulleted",
       active: false,
-      route: "/list",
+      route: "/tasks?tab=Todays",
     },
     {
       id: 4,

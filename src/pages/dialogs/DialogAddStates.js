@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getStateList,
-  getTransName,
-} from "../../redux/reducers/taskReducer";
+import { getStateList, getTransName } from "../../redux/reducers/taskReducer";
 
 import { getState } from "../../redux/reducers/taskReducer";
 
@@ -21,7 +18,7 @@ import {
 
 import { ModalHeader } from "./components/ModalHeader";
 
-export const DialogAddStates = () => {
+export const DialogAddStates = ({ item }) => {
   const dispatch = useDispatch();
   const db = getFirestore();
   const dbStates = collection(db, "states");
@@ -69,6 +66,10 @@ export const DialogAddStates = () => {
       return setStateData(getStateData);
     });
   }, []);
+
+  useEffect(() => {
+    dispatch(getState(item));
+  }, [dispatch, item]);
   return (
     <div id="Dialog-AddState" className="modal">
       <div className="modal-dialog">

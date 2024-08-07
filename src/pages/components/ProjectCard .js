@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { getStorage, ref, getDownloadURL, listAll } from "firebase/storage";
-import {
-  getFirestore,
-  getDocs,
-  collection,
-  onSnapshot,
-} from "firebase/firestore";
+import { getFirestore, collection } from "firebase/firestore";
 
 export const ProjectCard = ({ project, id }) => {
   let date = project.createDate.toDate();
@@ -24,17 +19,6 @@ export const ProjectCard = ({ project, id }) => {
   const projects = collection(db, "projects");
   const storage = getStorage();
   const [imgUrl, setImageUrl] = useState([]);
-  const [docIds, setDocIds] = useState([]);
-
-  // async function getDocIdRef() {
-  //   const querySnapShot = await getDocs(projects);
-  //   const docIds = [];
-  //   querySnapShot.forEach((doc) => {
-  //     docIds.push(doc.id);
-  //   });
-  //   console.log("docIds", docIds);
-  //   setDocIdRef(docIds);
-  // }
 
   async function getStaticProps() {
     const imageRef = ref(storage, `${id}/`);
@@ -51,42 +35,23 @@ export const ProjectCard = ({ project, id }) => {
     setImageUrl(urls);
   }
 
-  // useEffect(() => {
-  //   onSnapshot(projects, async (snapshot) => {
-  //     const ids = await snapshot.docs.map((doc) => doc.id);
-  //     return setDocIds(...docIds, ids);
-  //   });
-  // }, []);
-
   useEffect(() => {
-    // const fetchDocumentIds = async () => {
-    //   try {
-    //     const snapshot = await getDocs(projects);
-    //     const ids = snapshot.docs.map((doc) => doc.id);
-    //     setDocIds(ids);
-    //   } catch (error) {
-    //     console.error("Error fetching document IDs: ", error);
-    //   }
-    // };
-
-    // return () => fetchDocumentIds();
     getStaticProps();
-
-    console.log("project.image", project.image);
   }, []);
 
   return (
     <div id="ProjectCard" className="content-item button-effect">
       <div className="card-img">
-        <img src={project.image} alt="project_img" />
+        <img
+          src={project.image ? project.image : "https://placehold.co/600x400"}
+          alt="project_img"
+        />
       </div>
       <div className="card-top">
         <div className="tag">
           {Array.from(project.tags).map((tag, idx) => (
-            <div className="chip">
-              <p className="ellipsis-1" key={idx}>
-                {tag.name}
-              </p>
+            <div className="chip" key={idx}>
+              <p className="ellipsis-1">{tag.name}</p>
             </div>
           ))}
         </div>
