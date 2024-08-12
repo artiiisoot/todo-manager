@@ -1,36 +1,34 @@
 import { useEffect } from "react";
 
-export const TodayCard = ({ item, id }) => {
-  // const formatToDate = () => {
-  //   const date = task.timestamp;
-  //   const day = date.getFullYear();
-
-  //   return day
-  // };
-  let date = item.createDate.toDate();
+export const TodayCard = ({ todayItem, id, handleClickDetail }) => {
+  let date = todayItem.createDate.toDate();
   let day = date.getDate();
   let month = date.getMonth() + 1;
   let year = date.getFullYear();
-  let stringified = item.createDate.toDate().toISOString();
+  let stringified = todayItem.createDate.toDate().toISOString();
   var split1 = stringified.split("T");
   var time = split1[1].split(".");
 
   const formatDate = `${year}/${month}/${day}`;
   const formatTime = time[0];
 
-
   return (
-    <div id="TodayCard" className="content-item button-effect">
+    <div
+      id="TodayCard"
+      className={`content-item button-effect ${todayItem.state.name}`}
+      onClick={() => handleClickDetail(todayItem.category, id)}
+    >
       <div className="card-top">
         <div className="tag">
-          {Array.from(item.tags).map((tag, idx) => (
+          {Array.from(todayItem.tags).map((tag, idx) => (
             <div className="chip" key={idx}>
               <p className="ellipsis-1">{tag.name}</p>
             </div>
           ))}
         </div>
-        <p className="title">{item.title}</p>
-        <p className="category">{item.category}</p>
+        <p className="title">{todayItem.title}</p>
+        <p className="category">{todayItem.category}</p>
+        <i className="icons material-icons">done</i>
       </div>
 
       <div className="card-bottom">

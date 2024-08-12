@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { getStateList, getTransName } from "../../redux/reducers/taskReducer";
-
+import { getTransName } from "../../redux/reducers/taskReducer";
 import { getState } from "../../redux/reducers/taskReducer";
+import { getModalState } from "../../redux/reducers/modalReducer";
+
 
 import {
   collection,
   getFirestore,
   doc,
   addDoc,
-  getDocs,
   onSnapshot,
   deleteDoc,
   serverTimestamp,
@@ -23,12 +23,13 @@ export const DialogAddStates = ({ item }) => {
   const db = getFirestore();
   const dbStates = collection(db, "states");
   const [showErrMsg, setShowErrMsg] = useState(false);
-  const [isState, setIsState] = useState("before");
+  const [isState, setIsState] = useState("");
   const [stateData, setStateData] = useState([]);
   const taskState = useSelector((state) => state.task.value.state);
 
   function handleStateList(item) {
     dispatch(getState({ name: item }));
+    dispatch(getModalState({ type: "", title: "", open: false }));
   }
 
   async function handleAddTag() {
@@ -92,20 +93,18 @@ export const DialogAddStates = ({ item }) => {
               </div>
             </div>
           ) : (
-            //// ADMIN일때만 오픈 ////
-            // <div className="select">
-            //   <select
+            // <div className="input">
+            //   <input
+            //     type="text"
+            //     placeholder="Search for the option"
             //     value={isState}
             //     onChange={(e) => setIsState(e.target.value)}
-            //   >
-            //     <option value="before">시작전</option>
-            //     <option value="start">진행중</option>
-            //     <option value="complete">완료</option>
-            //   </select>
-
-            //   <i className="icons material-icons-outlined">expand_more</i>
+            //   />
+            //   {showErrMsg && (
+            //     <span className="error-message">error message</span>
+            //   )}
             // </div>
-            <div className="label-list"></div>
+            null
           )}
 
           <div className="divider"></div>
@@ -114,9 +113,8 @@ export const DialogAddStates = ({ item }) => {
             <p>Select an option or create one</p>
           </div>
 
-          {/*
-            //// ADMIN일때만 오픈 ////
-            {isState && (
+          {/* //// ADMIN일때만 오픈 //// */}
+          {isState && (
             <div className="add-item">
               <div className="left">
                 <h5>Create</h5>
@@ -129,7 +127,7 @@ export const DialogAddStates = ({ item }) => {
               </div>
               {console.log("isState", isState)}
             </div>
-          )} */}
+          )}
 
           {stateData && (
             <div className="item-list">

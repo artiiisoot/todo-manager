@@ -23,6 +23,7 @@ export const HomePage = () => {
   const db = getFirestore();
   const todays = collection(db, "todays");
   const projects = collection(db, "projects");
+  const [triggerFetch, setTriggerFetch] = useState(false);
   const [taskType, setTaskType] = useState([
     {
       name: "Todays",
@@ -41,35 +42,39 @@ export const HomePage = () => {
     dispatch(getHeaderState({ title: "Tasks" }));
   }
 
+  function handleClickDetail(category, id) {
+    dispatch(getHeaderState({ title: "Detail" }));
+    navigate(`/detail?category=${category}&id=${id}`);
+  }
+
   useEffect(() => {
-    const getTodayData = async () => {
-      const data = await getDocs(todays);
-      const getTaskData = data.docs.map((doc) => ({
-        id: doc.id,
-        data: doc.data(),
-      }));
+    const getData = async () => {
+      try {
+        // todays 문서 불러오기
+        const todayData = await getDocs(todays);
+        const todayTasks = todayData.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }));
 
-      setTodaysData(...todaysData, getTaskData);
+        // projects 문서 불러오기
+        const projectData = await getDocs(projects);
+        const projectTasks = projectData.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }));
+
+        // 상태 업데이트
+        setTodaysData(todayTasks);
+        setProjectsData(projectTasks);
+      } catch (error) {
+        console.error("Error fetching documents: ", error);
+      }
     };
 
-    const getProjectsData = async () => {
-      const data = await getDocs(projects);
-      const getTaskData = data.docs.map((doc) => ({
-        id: doc.id,
-        data: doc.data(),
-      }));
-
-      setProjectsData(...projectsData, getTaskData);
-    };
-
-    getTodayData();
-    getProjectsData();
+    getData(); // 컴포넌트가 마운트될 때 데이터 불러오기
   }, []);
 
-  function handleClickDetail(id) {
-    dispatch(getHeaderState({ title: "Detail" }));
-    navigate(`/detail/?id=${id}`);
-  }
   return (
     <div id="Home">
       <div className="header-bg"></div>
@@ -98,13 +103,14 @@ export const HomePage = () => {
                     spaceBetween={16}
                     slidesPerView={1.2}
                   >
-                    {todaysData.map((item, idx) => (
-                      <SwiperSlide
-                        key={idx}
-                        onClick={() => handleClickDetail(item.id)}
-                      >
-                        <TodayCard item={item.data} />
-                        {/* {console.log("item", item)} */}
+                    {todaysData.map((today, idx) => (
+                      <SwiperSlide key={idx}>
+                        <TodayCard
+                          todayItem={today.data}
+                          id={today.id}
+                         
+                          handleClickDetail={handleClickDetail}
+                        />
                       </SwiperSlide>
                     ))}
                   </Swiper>
@@ -128,7 +134,11 @@ export const HomePage = () => {
                   >
                     {projectsData.map((project, idx) => (
                       <SwiperSlide key={idx}>
-                        <ProjectCard project={project.data} id={project.id} />
+                        <ProjectCard
+                          projectItem={project.data}
+                          id={project.id}
+                          handleClickDetail={handleClickDetail}
+                        />
                       </SwiperSlide>
                     ))}
                   </Swiper>

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { useDispatch } from "react-redux";
+import { getHeaderState } from "../redux/reducers/headerReducer";
+
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 
 import { TodayCard } from "./components/TodayCard";
@@ -9,8 +12,9 @@ import { ProjectCard } from "./components/ProjectCard ";
 export const TasksPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const query = new URLSearchParams(location.search);
-  const defaultTab = query.get("tab") || "todays";
+  const dispatch = useDispatch();
+  const queryParams = new URLSearchParams(location.search);
+  const defaultTab = queryParams.get("tab") || "todays";
 
   const db = getFirestore();
   const todays = collection(db, "todays");
@@ -27,6 +31,11 @@ export const TasksPage = () => {
   ]);
   const [pageTitle, setPageTitle] = useState("Todays");
   const [activeTab, setActiveTab] = useState(defaultTab);
+
+  function handleWrite() {
+    navigate("/write");
+    dispatch(getHeaderState({ title: "Tasks" }));
+  }
 
   function handleTabBtn(type) {
     console.log("click");
@@ -48,39 +57,42 @@ export const TasksPage = () => {
         break;
     }
   }
-  function handleClickDetail(e, id) {
-    console.log(e.target);
-    console.log("click");
-    navigate(`/detail/${id}`);
+
+  function handleClickDetail(category, id) {
+    dispatch(getHeaderState({ title: "Detail" }));
+    navigate(`/detail?category=${category}&id=${id}`);
   }
 
   useEffect(() => {
-    const getTodayData = async () => {
-      const data = await getDocs(todays);
-      const getTaskData = data.docs.map((doc) => ({
-        id: doc.id,
-        data: doc.data(),
-      }));
+    const getData = async () => {
+      try {
+        // todays 문서 불러오기
+        const todayData = await getDocs(todays);
+        const todayTasks = todayData.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }));
 
-      setTodaysData(getTaskData);
+        // projects 문서 불러오기
+        const projectData = await getDocs(projects);
+        const projectTasks = projectData.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }));
+
+        // 상태 업데이트
+        setTodaysData(todayTasks);
+        setProjectsData(projectTasks);
+      } catch (error) {
+        console.error("Error fetching documents: ", error);
+      }
     };
 
-    const getProjectsData = async () => {
-      const data = await getDocs(projects);
-      const getTaskData = data.docs.map((doc) => ({
-        id: doc.id,
-        data: doc.data(),
-      }));
-
-      setProjectsData(...projectsData, getTaskData);
-    };
-
-    getTodayData();
-    getProjectsData();
+    getData(); // 컴포넌트가 마운트될 때 데이터 불러오기
   }, []);
 
   useEffect(() => {
-    setActiveTab(query.get("tab") || "todays");
+    setActiveTab(queryParams.get("tab") || "todays");
   }, [location.search]);
 
   return (
@@ -115,24 +127,38 @@ export const TasksPage = () => {
 
       <main className="pages">
         <div className="content today flex flex-col gap-2">
-          {activeTab === "Todays" && (
+          {activeTab === "Todays" && todaysData && todaysData.length > 0 ? (
             <>
-              {todaysData.map((item, idx) => (
+              {todaysData.map((today, idx) => (
                 <TodayCard
-                  item={item.data}
-                  id={idx}
-                  onClick={() => handleClickDetail(item.id)}
+                  key={idx}
+                  todayItem={today.data}
+                  id={today.id}
+                  handleClickDetail={handleClickDetail}
                 />
-                // console.log("task", task.data)
               ))}
             </>
-          )}
-          {activeTab === "Projects" && (
+          ) : activeTab === "Projects" &&
+            projectsData &&
+            projectsData.length > 0 ? (
             <>
               {projectsData.map((project, idx) => (
-                <ProjectCard project={project.data} id={idx} />
+                <ProjectCard
+                  key={idx}
+                  projectItem={project.data}
+                  id={project.id}
+                  handleClickDetail={handleClickDetail}
+                />
               ))}
             </>
+          ) : (
+            <div
+              id="TodayCard"
+              className="no-data content-item button-effect flex items-center justify-center"
+              onClick={handleWrite}
+            >
+              <h1>Please add your todo list</h1>
+            </div>
           )}
         </div>
       </main>

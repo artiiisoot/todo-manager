@@ -1,17 +1,35 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const Header = () => {
+  const navigate = useNavigate();
   const [isAlarm, setIsAlarm] = useState(true);
   const [isNavbar, setIsNavbar] = useState(false);
 
   const [isNavList, setIsNavList] = useState([
     {
       id: 1,
-      name: "Calendar",
+      name: "Home",
+      active: true,
+      route: "/",
     },
     {
       id: 2,
-      name: "Todos",
+      name: "Calender",
+      active: false,
+      route: "/calender",
+    },
+    {
+      id: 3,
+      name: "Tasks",
+      active: false,
+      route: "/tasks?tab=Todays",
+    },
+    {
+      id: 4,
+      name: "Settings",
+      active: false,
+      route: "/settings",
     },
   ]);
 
@@ -24,13 +42,13 @@ export const Header = () => {
     setIsNavbar(false);
   };
 
-  const handleList = (e) => {
-    e.stopPropagation();
-    console.log("click List");
+  const handleList = (item) => {
+    navigate(item.route)
+    
 
-    if (isAlarm) {
-      setIsAlarm(false);
-    }
+    // if (isAlarm) {
+    //   setIsAlarm(false);
+    // }
   };
 
   return (
@@ -69,12 +87,12 @@ export const Header = () => {
               {isNavList.map((item, idx) => (
                 <div
                   className="list button-effect flex justify-between items-center"
-                  onClick={handleList}
+                  onClick={() => handleList(item)}
                   key={idx}
                 >
                   {item.name}
 
-                  {isAlarm && <span className="dot"></span>}
+                  {/* {isAlarm && <span className="dot"></span>} */}
                 </div>
               ))}
             </div>

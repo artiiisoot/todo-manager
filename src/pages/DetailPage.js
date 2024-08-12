@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
-import { getTaskData, getCategory } from "../redux/reducers/taskReducer";
+import { getTaskData, resetState } from "../redux/reducers/taskReducer";
 
 import {
   getFirestore,
@@ -33,24 +33,19 @@ export const DetailPage = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const query = new URLSearchParams(location.search);
-  const itemId = query.get("id");
+  const queryParams = new URLSearchParams(location.search);
+  const itemCategory = queryParams.get("category");
+  const itemId = queryParams.get("id");
 
   const db = getFirestore();
   const todays = collection(db, "todays");
-  const [todaysData, setTodaysData] = useState([]);
+  const projects = collection(db, "projects");
+  const [tasksData, setTasksData] = useState([]);
   const [itemData, setItemData] = useState(null);
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDesc, setTaskDesc] = useState("");
 
   async function submitTaskData() {
-    console.log("taskTitle", taskTitle);
-    console.log("taskDesc", taskDesc);
-    console.log("taskCategory", taskCategory);
-    console.log("taskState", taskState);
-    console.log("taskGroup", taskGroup);
-    console.log("taskTags", taskTags);
-
     if (taskCategory === "Today") {
       try {
         const taskDocRef = doc(db, "todays", itemId);
@@ -63,6 +58,10 @@ export const DetailPage = () => {
           description: taskDesc,
           createDate: serverTimestamp(),
         });
+        setTaskTitle("");
+        setTaskDesc("");
+        dispatch(resetState());
+        navigate("/");
         console.log("Task updated successfully");
       } catch (error) {
         console.error("Error updating task: ", error);
@@ -80,6 +79,10 @@ export const DetailPage = () => {
           description: taskDesc,
           createDate: serverTimestamp(),
         });
+        setTaskTitle("");
+        setTaskDesc("");
+        dispatch(resetState());
+        navigate("/");
         console.log("Task updated successfully");
       } catch (error) {
         console.error("Error updating task: ", error);
@@ -88,27 +91,50 @@ export const DetailPage = () => {
   }
 
   useEffect(() => {
-    const getTodayData = async () => {
-      const data = await getDocs(todays);
-      const getTaskData = data.docs.map((doc) => ({
-        id: doc.id,
-        data: doc.data(),
-      }));
+    const fetchData = async () => {
+      let data;
+      let getTaskData;
 
-      setTodaysData(getTaskData);
+      switch (itemCategory) {
+        case "Today":
+          data = await getDocs(todays);
+          getTaskData = data.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }));
+          setTasksData(getTaskData);
+          break;
+
+        case "Project":
+          data = await getDocs(projects);
+          getTaskData = data.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }));
+          setTasksData(getTaskData);
+          break;
+
+        default:
+          setTasksData([]);
+          break;
+      }
     };
 
-    getTodayData();
-  }, []);
+    fetchData();
+  }, [itemCategory]);
 
   useEffect(() => {
-    if (todaysData.length > 0) {
-      const item = todaysData.find((item) => item.id === itemId);
+    console.log("tasksData", tasksData);
+  }, [tasksData]);
+
+  useEffect(() => {
+    if (tasksData.length > 0) {
+      const item = tasksData.find((item) => item.id === itemId);
       if (item) {
         setItemData(item.data);
       }
     }
-  }, [todaysData, itemId]);
+  }, [tasksData, itemId]);
 
   useEffect(() => {
     if (itemData) {
@@ -126,14 +152,9 @@ export const DetailPage = () => {
     }
   }, [itemData, dispatch, categoryList]);
 
-  useEffect(() => {
-    console.log("itemId", itemId);
-  }, [itemId]);
-
   return (
     <>
       <DetailHeader title={headerTitle} type={headerType} />
-
       <main className="document">
         <div className="title">
           <input
@@ -199,7 +220,6 @@ export const DetailPage = () => {
           </button>
         </div>
       </main>
-
       {modalOpen && modalType === "state" ? (
         <DialogAddStates item={itemData?.state} />
       ) : null}

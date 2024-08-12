@@ -25,8 +25,8 @@ export const DialogAddTags = () => {
   const taskTags = useSelector((state) => state.task.value.tags);
 
   function handleTag(e) {
-    if(e.target.value.length > 20) {
-      alert('20자 이상 입력할 수 없어요')
+    if(e.target.value.length > 18) {
+      alert('18자 이상 입력할 수 없어요')
       return false
     }
     setIsTag(e.target.value);

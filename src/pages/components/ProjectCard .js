@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { getStorage, ref, getDownloadURL, listAll } from "firebase/storage";
 import { getFirestore, collection } from "firebase/firestore";
 
-export const ProjectCard = ({ project, id }) => {
-  let date = project.createDate.toDate();
+export const ProjectCard = ({ projectItem, id, handleClickDetail }) => {
+  let date = projectItem.createDate.toDate();
   let day = date.getDate();
   let month = date.getMonth() + 1;
   let year = date.getFullYear();
-  let stringified = project.createDate.toDate().toISOString();
+  let stringified = projectItem.createDate.toDate().toISOString();
   var split1 = stringified.split("T");
   var time = split1[1].split(".");
 
@@ -40,23 +40,32 @@ export const ProjectCard = ({ project, id }) => {
   }, []);
 
   return (
-    <div id="ProjectCard" className="content-item button-effect">
+    <div
+      id="ProjectCard"
+      className={`content-item button-effect ${projectItem.state.name}`}
+      onClick={() => handleClickDetail(projectItem.category, id)}
+    >
       <div className="card-img">
         <img
-          src={project.image ? project.image : "https://placehold.co/600x400"}
+          src={
+            projectItem.image
+              ? projectItem.image
+              : "https://placehold.co/600x400"
+          }
           alt="project_img"
         />
       </div>
       <div className="card-top">
         <div className="tag">
-          {Array.from(project.tags).map((tag, idx) => (
+          {Array.from(projectItem.tags).map((tag, idx) => (
             <div className="chip" key={idx}>
               <p className="ellipsis-1">{tag.name}</p>
             </div>
           ))}
         </div>
-        <p className="title">{project.title}</p>
-        <p className="category">{project.category}</p>
+        <p className="title">{projectItem.title}</p>
+        <p className="category">{projectItem.category}</p>
+        <i className="icons material-icons">done</i>
       </div>
 
       <div className="card-bottom">

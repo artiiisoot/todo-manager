@@ -1,18 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useDispatch } from "react-redux";
 import { getHeaderState } from "../../redux/reducers/headerReducer";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const Tabbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isTabbarLeft, setIsTabbarLeft] = useState([
     {
       id: 1,
       name: "home",
-      active: false,
+      active: true,
       route: "/",
     },
     {
@@ -36,22 +37,26 @@ export const Tabbar = () => {
       route: "/settings",
     },
   ]);
-  const handleTabBar = (tabArray, id) => {
-    const activeList = tabArray.map((item) =>
-      item.id === id ? { ...item, active: true } : { ...item, active: false }
-    );
+  const handleTabBar = (id) => {
+    const allItems = [...isTabbarLeft, ...isTabbarRight];
+    const clickedItem = allItems.find((tab) => tab.id === id);
 
-    const move = () => {
-      tabArray.map((item) => (item.id === id ? navigate(item.route) : null));
-    };
-
-    if (tabArray === isTabbarLeft) {
-      setIsTabbarLeft(activeList);
-      move();
-    }
-    if (tabArray === isTabbarRight) {
-      setIsTabbarRight(activeList);
-      move();
+    if (clickedItem) {
+      setIsTabbarLeft((prevState) =>
+        prevState.map((item) =>
+          item.id === id
+            ? { ...item, active: true }
+            : { ...item, active: false }
+        )
+      );
+      setIsTabbarRight((prevState) =>
+        prevState.map((item) =>
+          item.id === id
+            ? { ...item, active: true }
+            : { ...item, active: false }
+        )
+      );
+      navigate(clickedItem.route);
     }
   };
 
@@ -70,7 +75,7 @@ export const Tabbar = () => {
                 item.active ? "active" : ""
               }`}
               key={idx}
-              onClick={() => handleTabBar(isTabbarLeft, item.id)}
+              onClick={() => handleTabBar(item.id)}
             >
               {item.name}
             </button>
@@ -83,7 +88,7 @@ export const Tabbar = () => {
                 item.active ? "active" : ""
               }`}
               key={item.id}
-              onClick={() => handleTabBar(isTabbarRight, item.id)}
+              onClick={() => handleTabBar(item.id)}
             >
               {item.name}
             </button>

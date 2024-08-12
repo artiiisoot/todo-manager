@@ -7,8 +7,11 @@ import { getModalState } from "../../redux/reducers/modalReducer";
 import {
   collection,
   getFirestore,
+  doc,
   addDoc,
   onSnapshot,
+  deleteDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 
 import { ModalHeader } from "./components/ModalHeader";
@@ -25,6 +28,13 @@ export const DialogAddGroup = () => {
   const [showErrMsg, setShowErrMsg] = useState(false);
   const taskGroup = useSelector((state) => state.task.value.group);
 
+  function handleGroup(e) {
+    if (e.target.value.length > 18) {
+      alert("18자 이상 입력할 수 없어요");
+      return false;
+    }
+    setIsGroup(e.target.value);
+  }
   function handleGroupList(item) {
     dispatch(getGroup({ name: item }));
     dispatch(getModalState({ type: "", title: "", open: false }));
@@ -33,13 +43,22 @@ export const DialogAddGroup = () => {
   async function handleAddGroup() {
     await addDoc(dbGroup, {
       name: isGroup,
+      timestamp: serverTimestamp(),
     });
     setShowAddInput(false);
     setIsGroup("");
   }
 
+  async function handleDeleteState(e, id) {
+    e.stopPropagation();
+    try {
+      await deleteDoc(doc(db, "group", id));
+    } catch (error) {
+      console.error("Error deleting document: ", error);
+    }
+  }
+
   useEffect(() => {
-    console.log("taskGroup", taskGroup);
     onSnapshot(dbGroup, (snapshot) => {
       const getGroupData = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -48,7 +67,7 @@ export const DialogAddGroup = () => {
 
       return setGroupData(getGroupData);
     });
-  }, [taskGroup]);
+  }, []);
 
   return (
     <div id="Dialog-AddState" className="modal">
@@ -56,38 +75,40 @@ export const DialogAddGroup = () => {
         <div className="modal-header">
           <ModalHeader />
         </div>
-
         <div className="modal-body">
-          <div className="group-list">
-            <h5>Group</h5>
-            <ul>
-              {groupData
-                ? groupData.map((item, idx) => (
-                    <li onClick={() => handleGroupList(item.name)} key={idx}>
-                      <p className="ellipsis-1">{item.name}</p>
-                      <button className="icons icons-sm material-icons-outlined">
-                        close
-                      </button>
-                    </li>
-                  ))
-                : null}
-            </ul>
-          </div>
-
-          {showAddInput ? (
-            <input
-              type="text"
-              placeholder="Search for the option"
-              value={isGroup}
-              onChange={(e) => setIsGroup(e.target.value)}
-            />
+          {taskGroup ? (
+            <div className="label-list">
+              <div className="group">
+                <p className={taskGroup.name}>{taskGroup.name}</p>
+                <button
+                  className="icons icons-sm material-icons-outlined"
+                  // onClick={(e) => handleDeleteStateList(e, taskState.name)}
+                >
+                  close
+                </button>
+              </div>
+            </div>
           ) : (
-            <button className="btn-add" onClick={() => setShowAddInput(true)}>
-              <i className="icons material-icons-outlined">add</i>
-              Add
-            </button>
+            <div className="input">
+              <input
+                type="text"
+                placeholder="Search for the option"
+                value={isGroup}
+                onChange={handleGroup}
+              />
+              {showErrMsg && (
+                <span className="error-message">error message</span>
+              )}
+            </div>
           )}
 
+          <div className="divider"></div>
+
+          <div className="text-item">
+            <p>Select an option or create one</p>
+          </div>
+
+          {/* //// ADMIN일때만 오픈 //// */}
           {isGroup && (
             <div className="add-item">
               <div className="left">
@@ -99,6 +120,31 @@ export const DialogAddGroup = () => {
                   Add
                 </button>
               </div>
+              {/* {console.log("isGroup", isGroup)} */}
+            </div>
+          )}
+
+          {groupData && (
+            <div className="item-list">
+              <ul>
+                {groupData.map((item, idx) => (
+                  <li onClick={() => handleGroupList(item.name)} key={idx}>
+                    <div className="group">
+                      <p>{item.name}</p>
+                      <button
+                        className="icons icons-sm material-icons-outlined"
+                        onClick={(e) => handleDeleteState(e, item.id)}
+                      >
+                        close
+                      </button>
+                    </div>
+
+                    <button className="icons material-icons-outlined">
+                      more_horiz
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>

@@ -560,7 +560,7 @@ main {
   width: 5rem;
   height: 5rem;
   border-radius: 0.25rem;
-  // overflow: hidden;
+  overflow: hidden;
 }
 
 #Header {
@@ -691,6 +691,7 @@ main {
   bottom: 0;
   transform: translateX(-50%);
   width: calc(100% - 2rem);
+  z-index: 1;
 
   .content {
     background: $color-white;
@@ -842,12 +843,48 @@ main {
 #ProjectCard {
   cursor: pointer;
 
+  i.icons {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1rem;
+    color: $color-white;
+    padding: 0.25rem;
+    background: #157f40;
+    border-radius: 50%;
+    display: none;
+    z-index: 1;
+  }
+
   &.no-data {
     outline: 1px dashed $color-gray-300;
 
     h1 {
       font-weight: 700;
       color: $color-gray-500;
+    }
+  }
+
+  &.complete {
+    .card-top {
+      position: relative;
+
+      &::after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        content: "";
+        background: rgba($color: $color-white, $alpha: 0.6);
+      }
+    }
+
+    p.title {
+      text-decoration: line-through;
+    }
+    i.icons {
+      display: block;
     }
   }
 
@@ -1158,7 +1195,7 @@ main {
           padding: 0.75rem 1rem;
           border-bottom: 1px solid $color-gray-200;
           > div {
-            max-width: 15rem;
+            max-width: 20rem;
           }
 
           > button.icons {

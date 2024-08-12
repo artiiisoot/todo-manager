@@ -2,7 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
-import { getTaskData, getCategory } from "../redux/reducers/taskReducer";
+import {
+  getCategory,
+  resetState,
+} from "../redux/reducers/taskReducer";
 
 import {
   getFirestore,
@@ -64,7 +67,7 @@ export const WritePage = () => {
 
         setTaskTitle("");
         setTaskDesc("");
-        dispatch(getTaskData({ state: "", group: "", tags: [] }));
+        dispatch(resetState());
         navigate("/");
       } catch (error) {
         console.error("Error writing task: ", error);
@@ -114,7 +117,7 @@ export const WritePage = () => {
         }
         setTaskTitle("");
         setTaskDesc("");
-        dispatch(getTaskData({ state: "", group: "", tags: [] }));
+        dispatch(resetState());
         navigate("/");
       } catch (error) {
         console.error("Error writing task: ", error);

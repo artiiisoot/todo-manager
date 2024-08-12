@@ -13,13 +13,13 @@ const firebaseConfig = {
   // measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
   // databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
 
-  apiKey: "AIzaSyAxzjqkxQ80swHHyQJS9KP1zfUjebCgYUc",
-  authDomain: "todo-manager-3de80.firebaseapp.com",
-  projectId: "todo-manager-3de80",
-  storageBucket: "todo-manager-3de80.appspot.com",
-  messagingSenderId: "958750918271",
-  appId: "1:958750918271:web:6433e470143b8281bae14a",
-  measurementId: "G-0PSLJ8J9SJ"
+  apiKey: "AIzaSyDGxvdXs_zjzwqa-5zuVLqOE9I059uHVR4",
+  authDomain: "todoapp-fdf75.firebaseapp.com",
+  projectId: "todoapp-fdf75",
+  storageBucket: "todoapp-fdf75.appspot.com",
+  messagingSenderId: "835085894913",
+  appId: "1:835085894913:web:dfbdc774fbf7ef09360700",
+  measurementId: "G-07LVWFW9PH"
   // databaseURL: "https://todo-manager-3de80.asia-northeast3.firebaseio.com",
 };
 
