@@ -912,6 +912,18 @@ main {
     }
   }
 
+  &.calendar {
+    .content-title {
+      font-size: 0.75rem;
+      color: $color-gray-500;
+    }
+    button {
+      font-size: 0.75rem;
+      color: $color-primary;
+      opacity: 1 !important;
+    }
+  }
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -1258,6 +1270,7 @@ main {
     transform: translate(-50%, -50%);
     opacity: 0;
     transition: all 0.3s ease-out;
+    z-index: 1;
   }
 
   &:hover::before {

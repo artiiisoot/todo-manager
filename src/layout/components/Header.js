@@ -15,9 +15,9 @@ export const Header = () => {
     },
     {
       id: 2,
-      name: "Calender",
+      name: "Calendar",
       active: false,
-      route: "/calender",
+      route: "/calendar",
     },
     {
       id: 3,

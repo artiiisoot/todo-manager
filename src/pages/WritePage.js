@@ -2,10 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getCategory,
-  resetState,
-} from "../redux/reducers/taskReducer";
+import { getCategory, resetState } from "../redux/reducers/taskReducer";
 
 import {
   getFirestore,
@@ -13,7 +10,6 @@ import {
   doc,
   addDoc,
   updateDoc,
-  serverTimestamp,
 } from "firebase/firestore";
 
 import {
@@ -28,6 +24,10 @@ import { SelectOption } from "./components/SelectOption";
 import { DialogAddStates } from "./dialogs/DialogAddStates";
 import { DialogAddTags } from "./dialogs/DialogAddTags";
 import { DialogAddGroup } from "./dialogs/DialogAddGroup";
+
+import DatePicker from "react-date-picker";
+import 'react-date-picker/dist/DatePicker.css';
+import 'react-calendar/dist/Calendar.css';
 
 export const WritePage = () => {
   const navigate = useNavigate();
@@ -49,6 +49,8 @@ export const WritePage = () => {
   const [images, setImages] = useState([]);
   const [urls, setUrls] = useState([]);
 
+  const [value, onChange] = useState(new Date());
+
   const db = getFirestore();
   const storage = getStorage();
 
@@ -62,7 +64,7 @@ export const WritePage = () => {
           group: taskGroup,
           tags: taskTags,
           description: taskDesc,
-          createDate: serverTimestamp(),
+          createDate: new Date(),
         });
 
         setTaskTitle("");
@@ -82,7 +84,7 @@ export const WritePage = () => {
           group: taskGroup,
           tags: taskTags,
           description: taskDesc,
-          createDate: serverTimestamp(),
+          createDate: new Date(),
         });
 
         // 이미지 업로드
@@ -143,6 +145,11 @@ export const WritePage = () => {
     setImages([...images, theFile]);
   }
 
+  useEffect(()=> {
+    console.log("value", value);
+    
+  },[value])
+
   return (
     <>
       <DetailHeader title={headerTitle} type={headerType} />
@@ -175,6 +182,11 @@ export const WritePage = () => {
         <div className="option">
           <div className="option-item">
             <ul>
+              <li className="flex items-center">
+                <p className="title">Date</p>
+                <DatePicker onChange={onChange} value={value} clearIcon={null} />
+              </li>
+
               <li className="flex items-center">
                 <p className="title">State</p>
                 <SelectOption id="state" items={taskState} />

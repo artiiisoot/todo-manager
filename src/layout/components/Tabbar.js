@@ -20,7 +20,7 @@ export const Tabbar = () => {
       id: 2,
       name: "calendar_month",
       active: false,
-      route: "/calender",
+      route: "/calendar",
     },
   ]);
   const [isTabbarRight, setIsTabbarRight] = useState([

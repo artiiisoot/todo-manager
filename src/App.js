@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import { AppLayout } from "./layout/AppLayout";
 import { HomePage } from "./pages/HomePage";
-import { Calender } from "./pages/Calender";
+import { CalendarPage } from "./pages/CalendarPage";
 import { WritePage } from "./pages/WritePage";
 import { TasksPage } from "./pages/TasksPage";
 import { DetailPage } from "./pages/DetailPage";
@@ -14,7 +14,7 @@ function App() {
       <Route path="/" element={<AppLayout />}>
         <Route index element={<HomePage />} />
         <Route path="tasks" element={<TasksPage />} />
-        <Route path="calender" element={<Calender />} />
+        <Route path="calendar" element={<CalendarPage />} />
       </Route>
 
       <Route path="write" element={<WritePage />} />
