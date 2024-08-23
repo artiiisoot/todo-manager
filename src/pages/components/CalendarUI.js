@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { selectedDate } from "../../redux/reducers/dateReducer";
@@ -7,6 +7,7 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import moment from "moment";
 import styled from "styled-components";
+import { formatDate } from "../../utils/dateUtils";
 
 export const StyledCalendarWrapper = styled.div`
   position: relative;
@@ -33,8 +34,8 @@ export const StyledCalendar = styled(Calendar)`
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
+    width: 85%;
+    height: 85%;
     text-decoration: none;
   }
   .react-calendar__navigation {
@@ -48,6 +49,19 @@ export const StyledCalendar = styled(Calendar)`
     align-items: center;
     justify-content: center;
     padding: unset;
+
+    &:focus,
+    &:active {
+      &::before {
+        opacity: 0;
+      }
+    }
+
+    &--active {
+      > div {
+        background: #fff;
+      }
+    }
   }
   .react-calendar__tile:enabled:hover,
   .react-calendar__tile:enabled:focus {
@@ -57,7 +71,7 @@ export const StyledCalendar = styled(Calendar)`
     abbr {
       background: #777777;
       color: #fff;
-      border-radius: 50%;
+      border-radius: 0.25rem;
     }
   }
   .react-calendar__year-view__months__month {
@@ -66,7 +80,7 @@ export const StyledCalendar = styled(Calendar)`
       abbr {
         background: unset;
         color: #fff;
-        border-radius: 50%;
+        border-radius: 0.25rem;
       }
     }
   }
@@ -74,7 +88,7 @@ export const StyledCalendar = styled(Calendar)`
   .react-calendar__tile--active {
     abbr {
       background: #be3455;
-      border-radius: 50%;
+      border-radius: 0.25rem;
     }
   }
 
@@ -125,6 +139,17 @@ export const StyledToday = styled.button`
   background: #efefef;
 `;
 
+export const StyledDot = styled.div`
+  background-color: #a0a0a0;
+  border-radius: 50%;
+  width: 0.3rem;
+  height: 0.3rem;
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translateX(-50%);
+`;
+
 export const BtnIcon = styled.div`
   display: flex;
   align-items: center;
@@ -134,9 +159,11 @@ export const BtnIcon = styled.div`
   }
 `;
 
-export const CalendarUI = ({ date, setDate }) => {
+export const CalendarUI = ({ date, setDate, todaysData, projectsData }) => {
   const dispatch = useDispatch();
   const [activeStartDate, setActiveStartDate] = useState(new Date());
+  const [markToday, setMarkToday] = useState([]);
+  const [markProject, setMarkProject] = useState([]);
 
   function handleDateChange(newDate) {
     dispatch(selectedDate(newDate));
@@ -148,6 +175,37 @@ export const CalendarUI = ({ date, setDate }) => {
     setActiveStartDate(today);
     setDate(today);
   }
+  // function allTodayDate() {
+
+  // }
+  function formattedDate(date) {
+    return moment(date).format("YYYY-MM-DD");
+  }
+
+  // 데이터를 로드하고 상태를 업데이트하는 함수
+  useEffect(() => {
+    const savedMarkToday = JSON.parse(localStorage.getItem("markToday")) || [];
+    const savedMarkProject =
+      JSON.parse(localStorage.getItem("markProject")) || [];
+
+    const markedTodayDates = todaysData.map((today) => today.createDate);
+    const markedProjectDates = projectsData.map(
+      (project) => project.createDate
+    );
+
+    const updatedMarkToday = [
+      ...new Set([...savedMarkToday, ...markedTodayDates]),
+    ];
+    const updatedMarkProject = [
+      ...new Set([...savedMarkProject, ...markedProjectDates]),
+    ];
+
+    setMarkToday(updatedMarkToday);
+    setMarkProject(updatedMarkProject);
+
+    localStorage.setItem("markToday", JSON.stringify(updatedMarkToday));
+    localStorage.setItem("markProject", JSON.stringify(updatedMarkProject));
+  }, [todaysData, projectsData]);
 
   return (
     <StyledCalendarWrapper>
@@ -171,7 +229,22 @@ export const CalendarUI = ({ date, setDate }) => {
         next2Label={null} // +1년 & +10년 이동 버튼 숨기기
         prev2Label={null} // -1년 & -10년 이동 버튼 숨기기
         calendarType="gregory" // 일요일 부터 시작
-        // tileContent={}
+        tileContent={({ date, view }) => {
+          let html = [];
+          if (
+            markToday?.find((day) => day === moment(date).format("YYYY-MM-DD"))
+          ) {
+            html.push(<StyledDot key={`today-${formattedDate(date)}`} />);
+          }
+          if (
+            markProject?.find(
+              (day) => day === moment(date).format("YYYY-MM-DD")
+            )
+          ) {
+            html.push(<StyledDot key={`project-${formattedDate}`} />);
+          }
+          return <>{html}</>;
+        }}
         prevLabel={
           <BtnIcon>
             <i className="icons material-icons-outlined">chevron_left</i>
@@ -184,7 +257,6 @@ export const CalendarUI = ({ date, setDate }) => {
         }
       />
       <StyledToday onClick={handleTodayClick}>Today</StyledToday>
-      <p>{selectedDate}</p>
     </StyledCalendarWrapper>
   );
 };

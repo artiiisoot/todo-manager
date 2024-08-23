@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
-import { getTaskData, resetState } from "../redux/reducers/taskReducer";
+import {
+  getTaskData,
+  getCreateDate,
+  resetState,
+} from "../redux/reducers/taskReducer";
 
 import {
   getFirestore,
@@ -15,9 +19,12 @@ import {
 
 import { DetailHeader } from "./components/DetailHeader";
 import { SelectOption } from "./components/SelectOption";
+import { DatePickerComponent } from "./components/DatePickerComponent";
 import { DialogAddStates } from "./dialogs/DialogAddStates";
 import { DialogAddTags } from "./dialogs/DialogAddTags";
 import { DialogAddGroup } from "./dialogs/DialogAddGroup";
+
+import { formatDate } from "../utils/dateUtils";
 
 export const DetailPage = () => {
   const dispatch = useDispatch();
@@ -30,6 +37,8 @@ export const DetailPage = () => {
   const taskState = useSelector((state) => state.task.value.state);
   const taskGroup = useSelector((state) => state.task.value.group);
   const taskTags = useSelector((state) => state.task.value.tags);
+  const taskCreateDate = useSelector((state) => state.task.value.createDate);
+  const selectedDate = useSelector((state) => state.date.selectedDate);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,6 +53,9 @@ export const DetailPage = () => {
   const [itemData, setItemData] = useState(null);
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDesc, setTaskDesc] = useState("");
+  const [value, setValue] = useState(
+    taskCreateDate ? taskCreateDate : new Date()
+  );
 
   async function submitTaskData() {
     if (taskCategory === "Today") {
@@ -56,7 +68,7 @@ export const DetailPage = () => {
           group: taskGroup,
           tags: taskTags,
           description: taskDesc,
-          createDate: serverTimestamp(),
+          createDate: value,
         });
         setTaskTitle("");
         setTaskDesc("");
@@ -77,7 +89,7 @@ export const DetailPage = () => {
           group: taskGroup,
           tags: taskTags,
           description: taskDesc,
-          createDate: serverTimestamp(),
+          createDate: value,
         });
         setTaskTitle("");
         setTaskDesc("");
@@ -101,6 +113,7 @@ export const DetailPage = () => {
           getTaskData = data.docs.map((doc) => ({
             id: doc.id,
             data: doc.data(),
+            createDate: formatDate(doc.data().createDate.toDate()),
           }));
           setTasksData(getTaskData);
           break;
@@ -124,10 +137,6 @@ export const DetailPage = () => {
   }, [itemCategory]);
 
   useEffect(() => {
-    console.log("tasksData", tasksData);
-  }, [tasksData]);
-
-  useEffect(() => {
     if (tasksData.length > 0) {
       const item = tasksData.find((item) => item.id === itemId);
       if (item) {
@@ -135,6 +144,10 @@ export const DetailPage = () => {
       }
     }
   }, [tasksData, itemId]);
+
+  useEffect(() => {
+    setValue(taskCreateDate);
+  }, [taskCreateDate]);
 
   useEffect(() => {
     if (itemData) {
@@ -147,6 +160,7 @@ export const DetailPage = () => {
           state: itemData.state,
           group: itemData.group,
           tags: itemData.tags,
+          createDate: itemData.createDate.toDate(),
         })
       );
     }
@@ -183,6 +197,11 @@ export const DetailPage = () => {
         <div className="option">
           <div className="option-item">
             <ul>
+              <li className="flex items-center">
+                <p className="title">Date</p>
+                <DatePickerComponent setValue={setValue} value={value} />
+              </li>
+
               <li className="flex items-center">
                 <p className="title">State</p>
                 <SelectOption id="state" items={taskState} />

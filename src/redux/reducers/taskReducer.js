@@ -13,6 +13,7 @@ let initialStateValue = {
   state: "",
   group: "",
   tags: [],
+  createDate: "",
 };
 
 const taskSlice = createSlice({
@@ -37,6 +38,10 @@ const taskSlice = createSlice({
       );
       state.value.tags = action.payload;
     },
+    getCreateDate(state, action) {
+      console.log("state.createDate", state.createDate);
+      state.value.createDate = action.payload;
+    },
     getTaskData(state, action) {
       state.value = action.payload;
     },
@@ -57,6 +62,7 @@ export const {
   getState,
   getGroup,
   getTags,
+  getCreateDate,
   resetState,
 } = taskSlice.actions;
 export default taskSlice.reducer;

@@ -417,10 +417,6 @@ main {
   }
 }
 
-.height {
-  height: calc(var(--vh, 1vh) * 100);
-}
-
 .dot {
   display: inline-block;
   width: 0.75rem;
@@ -443,7 +439,9 @@ main {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
+.wrapper {
+  padding-bottom: 6rem;
+}
 .header-bg {
   position: absolute;
   top: 0;

@@ -21,13 +21,10 @@ import {
 
 import { DetailHeader } from "./components/DetailHeader";
 import { SelectOption } from "./components/SelectOption";
+import { DatePickerComponent } from "./components/DatePickerComponent";
 import { DialogAddStates } from "./dialogs/DialogAddStates";
 import { DialogAddTags } from "./dialogs/DialogAddTags";
 import { DialogAddGroup } from "./dialogs/DialogAddGroup";
-
-import DatePicker from "react-date-picker";
-import 'react-date-picker/dist/DatePicker.css';
-import 'react-calendar/dist/Calendar.css';
 
 export const WritePage = () => {
   const navigate = useNavigate();
@@ -41,6 +38,7 @@ export const WritePage = () => {
   const taskState = useSelector((state) => state.task.value.state);
   const taskGroup = useSelector((state) => state.task.value.group);
   const taskTags = useSelector((state) => state.task.value.tags);
+  const selectedDate = useSelector((state) => state.date.selectedDate);
 
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDesc, setTaskDesc] = useState("");
@@ -49,7 +47,9 @@ export const WritePage = () => {
   const [images, setImages] = useState([]);
   const [urls, setUrls] = useState([]);
 
-  const [value, onChange] = useState(new Date());
+  const [value, setValue] = useState(
+    selectedDate ? new Date(selectedDate) : new Date()
+  );
 
   const db = getFirestore();
   const storage = getStorage();
@@ -64,7 +64,7 @@ export const WritePage = () => {
           group: taskGroup,
           tags: taskTags,
           description: taskDesc,
-          createDate: new Date(),
+          createDate: value,
         });
 
         setTaskTitle("");
@@ -84,7 +84,7 @@ export const WritePage = () => {
           group: taskGroup,
           tags: taskTags,
           description: taskDesc,
-          createDate: new Date(),
+          createDate: value,
         });
 
         // 이미지 업로드
@@ -145,10 +145,9 @@ export const WritePage = () => {
     setImages([...images, theFile]);
   }
 
-  useEffect(()=> {
+  useEffect(() => {
     console.log("value", value);
-    
-  },[value])
+  }, [value]);
 
   return (
     <>
@@ -184,7 +183,7 @@ export const WritePage = () => {
             <ul>
               <li className="flex items-center">
                 <p className="title">Date</p>
-                <DatePicker onChange={onChange} value={value} clearIcon={null} />
+                <DatePickerComponent setValue={setValue} value={value} />
               </li>
 
               <li className="flex items-center">

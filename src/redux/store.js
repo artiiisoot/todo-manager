@@ -12,6 +12,8 @@ export const store = configureStore({
     task: taskReducer,
     date: dateReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ serializableCheck: false }),
 });
 
 export default store;

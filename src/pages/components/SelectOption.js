@@ -28,9 +28,9 @@ export const SelectOption = ({ id, items }) => {
     }
   }
 
-  useEffect(() => {
-    console.log("items", items);
-  }, [items]);
+  // useEffect(() => {
+  //   console.log("items", items);
+  // }, [items]);
   return (
     <div
       className={`result ${id === "tags" ? "" : "flex"}`}

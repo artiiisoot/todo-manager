@@ -114,10 +114,10 @@ export const DetailHeader = () => {
   //   fetchData();
   // }, [itemCategory]);
 
-  useEffect(() => {
-    console.log("itemCategory", itemCategory);
-    console.log("itemId", itemId);
-  }, [itemCategory, itemId]);
+  // useEffect(() => {
+  //   console.log("itemCategory", itemCategory);
+  //   console.log("itemId", itemId);
+  // }, [itemCategory, itemId]);
 
   return (
     <div

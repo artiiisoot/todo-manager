@@ -32,6 +32,11 @@ export const CalendarPage = () => {
   const [date, setDate] = useState(today);
   const calendarDate = formatDate(date);
 
+  function handleWrite() {
+    navigate("/write");
+    dispatch(getHeaderState({ title: "Tasks" }));
+  }
+
   function handleClickDetail(category, id) {
     dispatch(getHeaderState({ title: "Detail" }));
     navigate(`/detail?category=${category}&id=${id}`);
@@ -54,6 +59,7 @@ export const CalendarPage = () => {
         const projectTasks = projectData.docs.map((doc) => ({
           id: doc.id,
           data: doc.data(),
+          createDate: formatDate(doc.data().createDate.toDate()),
         }));
 
         // 상태 업데이트
@@ -70,13 +76,22 @@ export const CalendarPage = () => {
   useEffect(() => {
     setActiveTab(queryParams.get("tab") || "todays");
   }, [location.search]);
+  useEffect(() => {
+    console.log("todaysData", todaysData);
+    console.log("projectsData", projectsData);
+  }, [todaysData, projectsData]);
 
   return (
     <div id="Calendar">
       <div className="header-bg"></div>
 
       <main className="flex flex-col gap-8">
-        <CalendarUI date={date} setDate={setDate} />
+        <CalendarUI
+          date={date}
+          setDate={setDate}
+          todaysData={todaysData}
+          projectsData={projectsData}
+        />
 
         <div className="content calendar flex flex-col gap-2">
           <div className="content-title flex items-center justify-between">
@@ -86,16 +101,27 @@ export const CalendarPage = () => {
             </button>
           </div>
 
-          {todaysData
-            .filter((today) => today.createDate === calendarDate)
-            .map((today, idx) => (
-              <TodayCard
-                key={idx}
-                todayItem={today.data}
-                id={today.id}
-                handleClickDetail={handleClickDetail}
-              />
-            ))}
+          {todaysData.filter((today) => today.createDate === calendarDate)
+            .length > 0 ? (
+            todaysData
+              .filter((today) => today.createDate === calendarDate)
+              .map((today, idx) => (
+                <TodayCard
+                  key={idx}
+                  todayItem={today.data}
+                  id={today.id}
+                  handleClickDetail={handleClickDetail}
+                />
+              ))
+          ) : (
+            <div
+              id="TodayCard"
+              className="no-data content-item button-effect flex items-center justify-center"
+              onClick={handleWrite}
+            >
+              <h1>Please add your todo list</h1>
+            </div>
+          )}
         </div>
 
         <div className="content calendar flex flex-col gap-2">
@@ -105,15 +131,27 @@ export const CalendarPage = () => {
               See All
             </button>
           </div>
-
-          {projectsData.map((project, idx) => (
-            <ProjectCard
-              key={idx}
-              projectItem={project.data}
-              id={project.id}
-              handleClickDetail={handleClickDetail}
-            />
-          ))}
+          {projectsData.filter((project) => project.createDate === calendarDate)
+            .length > 0 ? (
+            projectsData
+              .filter((project) => project.createDate === calendarDate)
+              .map((project, idx) => (
+                <ProjectCard
+                  key={idx}
+                  projectItem={project.data}
+                  id={project.id}
+                  handleClickDetail={handleClickDetail}
+                />
+              ))
+          ) : (
+            <div
+              id="TodayCard"
+              className="no-data content-item button-effect flex items-center justify-center"
+              onClick={handleWrite}
+            >
+              <h1>Please add your todo list</h1>
+            </div>
+          )}
         </div>
       </main>
     </div>

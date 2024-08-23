@@ -18,7 +18,10 @@ export const AppLayout = () => {
   return (
     <>
       <Header></Header>
-      <Outlet />
+      
+      <div className="wrapper">
+        <Outlet />
+      </div>
 
       {isHidden ? null : <Tabbar></Tabbar>}
     </>
