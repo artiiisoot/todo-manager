@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "https://artiiisoot.github.io/todo-manager/static/css/main.51637214.css",
-    "main.js": "https://artiiisoot.github.io/todo-manager/static/js/main.4cd9e25e.js",
+    "main.js": "https://artiiisoot.github.io/todo-manager/static/js/main.dd61d675.js",
     "static/js/453.9b5e9a85.chunk.js": "https://artiiisoot.github.io/todo-manager/static/js/453.9b5e9a85.chunk.js",
     "static/media/material-icons-two-tone.woff": "https://artiiisoot.github.io/todo-manager/static/media/material-icons-two-tone.3baa5b8f3469222b822d.woff",
     "static/media/material-icons-two-tone.woff2": "https://artiiisoot.github.io/todo-manager/static/media/material-icons-two-tone.4ef4218c522f1eb6b5b1.woff2",
@@ -15,11 +15,11 @@
     "static/media/material-icons.woff2": "https://artiiisoot.github.io/todo-manager/static/media/material-icons.0c35d18bf06992036b69.woff2",
     "index.html": "https://artiiisoot.github.io/todo-manager/index.html",
     "main.51637214.css.map": "https://artiiisoot.github.io/todo-manager/static/css/main.51637214.css.map",
-    "main.4cd9e25e.js.map": "https://artiiisoot.github.io/todo-manager/static/js/main.4cd9e25e.js.map",
+    "main.dd61d675.js.map": "https://artiiisoot.github.io/todo-manager/static/js/main.dd61d675.js.map",
     "453.9b5e9a85.chunk.js.map": "https://artiiisoot.github.io/todo-manager/static/js/453.9b5e9a85.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.51637214.css",
-    "static/js/main.4cd9e25e.js"
+    "static/js/main.dd61d675.js"
   ]
 }
