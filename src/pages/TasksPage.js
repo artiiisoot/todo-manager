@@ -31,6 +31,7 @@ export const TasksPage = () => {
   ]);
   const [pageTitle, setPageTitle] = useState("Todays");
   const [activeTab, setActiveTab] = useState(defaultTab);
+  const [onGoingTask, setOnGoingTask] = useState("");
 
   function handleWrite() {
     navigate("/write");
@@ -63,22 +64,74 @@ export const TasksPage = () => {
     navigate(`/detail?category=${category}&id=${id}`);
   }
 
+  const onGoingCount =
+    pageTitle === "Todays"
+      ? todaysData.filter(
+          (task) =>
+            task.data.state.name === "before" ||
+            task.data.state.name === "start"
+        ).length
+      : projectsData.filter(
+          (task) =>
+            task.data.state.name === "before" ||
+            task.data.state.name === "start"
+        ).length;
+
+  const onCompleteCount =
+    pageTitle === "Todays"
+      ? todaysData.filter((task) => task.data.state.name === "complete").length
+      : projectsData.filter((task) => task.data.state.name === "complete")
+          .length;
+
   useEffect(() => {
     const getData = async () => {
       try {
         // todays 문서 불러오기
         const todayData = await getDocs(todays);
-        const todayTasks = todayData.docs.map((doc) => ({
+        let todayTasks = todayData.docs.map((doc) => ({
           id: doc.id,
           data: doc.data(),
         }));
 
         // projects 문서 불러오기
         const projectData = await getDocs(projects);
-        const projectTasks = projectData.docs.map((doc) => ({
+        let projectTasks = projectData.docs.map((doc) => ({
           id: doc.id,
           data: doc.data(),
         }));
+
+        todayTasks = todayTasks.sort((a, b) => {
+          const isAStart =
+            a.data.state.name === "before" || a.data.state.name === "start";
+          const isBStart =
+            b.data.state.name === "before" || b.data.state.name === "start";
+
+          if (isAStart && !isBStart) {
+            return -1; // a가 b보다 상위로
+          } else if (!isAStart && isBStart) {
+            return 1; // b가 a보다 상위로
+          } else {
+            // 둘 다 "start"가 아니거나 둘 다 "start"일 경우 createDate로 정렬
+            return a.data.createDate - b.data.createDate;
+          }
+        });
+
+
+        projectTasks = projectTasks.sort((a, b) => {
+          const isAStart =
+            a.data.state.name === "before" || a.data.state.name === "start";
+          const isBStart =
+            b.data.state.name === "before" || b.data.state.name === "start";
+
+          if (isAStart && !isBStart) {
+            return -1; // a가 b보다 상위로
+          } else if (!isAStart && isBStart) {
+            return 1; // b가 a보다 상위로
+          } else {
+            // 둘 다 "start"가 아니거나 둘 다 "start"일 경우 createDate로 정렬
+            return a.data.createDate - b.data.createDate;
+          }
+        });
 
         // 상태 업데이트
         setTodaysData(todayTasks);
@@ -102,15 +155,27 @@ export const TasksPage = () => {
           <div className="content-title flex items-center">
             <p>{pageTitle} Tasks</p>
           </div>
-          <ul className="flex gap-2 items-center justify-end">
-            <li>
-              On Going <span>00</span>
-            </li>
-            <li className="disabled">/</li>
-            <li className="disabled">
-              Complete <span>00</span>
-            </li>
-          </ul>
+          {pageTitle === "Todays" ? (
+            <ul className="flex gap-2 items-center justify-end">
+              <li>
+                On Going <span>0{onGoingCount}</span>
+              </li>
+              <li className="disabled">/</li>
+              <li className="disabled">
+                Complete <span>0{onCompleteCount}</span>
+              </li>
+            </ul>
+          ) : pageTitle === "Projects" ? (
+            <ul className="flex gap-2 items-center justify-end">
+              <li>
+                On Going <span>0{onGoingCount}</span>
+              </li>
+              <li className="disabled">/</li>
+              <li className="disabled">
+                Complete <span>0{onCompleteCount}</span>
+              </li>
+            </ul>
+          ) : null}
         </div>
         <div id="Tab">
           {tabs.map((tab, idx) => (

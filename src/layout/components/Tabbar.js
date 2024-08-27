@@ -13,14 +13,14 @@ export const Tabbar = () => {
     {
       id: 1,
       name: "home",
-      active: true,
-      route: "/",
+      active: false,
+      path: "/",
     },
     {
       id: 2,
       name: "calendar_month",
       active: false,
-      route: "/calendar",
+      path: "/calendar",
     },
   ]);
   const [isTabbarRight, setIsTabbarRight] = useState([
@@ -28,42 +28,70 @@ export const Tabbar = () => {
       id: 3,
       name: "format_list_bulleted",
       active: false,
-      route: "/tasks?tab=Todays",
+      path: "/tasks",
     },
     {
       id: 4,
       name: "settings",
       active: false,
-      route: "/settings",
+      path: "/settings",
     },
   ]);
-  const handleTabBar = (id) => {
-    const allItems = [...isTabbarLeft, ...isTabbarRight];
-    const clickedItem = allItems.find((tab) => tab.id === id);
+  const handleTabBar = (clickItem) => {
+    // 좌측 탭바 상태 업데이트
+    setIsTabbarLeft((prevTabs) =>
+      prevTabs.map((tab) =>
+        tab.id === clickItem.id
+          ? { ...tab, active: true }
+          : { ...tab, active: false }
+      )
+    );
 
-    if (clickedItem) {
-      setIsTabbarLeft((prevState) =>
-        prevState.map((item) =>
-          item.id === id
-            ? { ...item, active: true }
-            : { ...item, active: false }
-        )
-      );
-      setIsTabbarRight((prevState) =>
-        prevState.map((item) =>
-          item.id === id
-            ? { ...item, active: true }
-            : { ...item, active: false }
-        )
-      );
-      navigate(clickedItem.route);
-    }
+    // 우측 탭바 상태 업데이트
+    setIsTabbarRight((prevTabs) =>
+      prevTabs.map((tab) =>
+        tab.id === clickItem.id
+          ? { ...tab, active: true }
+          : { ...tab, active: false }
+      )
+    );
+
+    // 클릭된 탭에 해당하는 경로로 이동
+    navigate(clickItem.path);
   };
 
   function handleWrite() {
     navigate("/write");
     dispatch(getHeaderState({ title: "Tasks" }));
   }
+
+  useEffect(() => {
+    // 현재 경로가 "/tasks"일 때 "/tasks?tab=Todays"로 리디렉트
+    if (location.pathname === "/tasks" && !location.search.includes("tab=")) {
+      navigate("/tasks?tab=Todays", { replace: true });
+    }
+  }, [location, navigate]);
+
+  // location.pathname이 변경될 때마다 실행되는 useEffect
+  useEffect(() => {
+    // 좌측 탭바 상태 업데이트
+    setIsTabbarLeft((prevTabs) =>
+      prevTabs.map((tab) =>
+        tab.path === location.pathname
+          ? { ...tab, active: true }
+          : { ...tab, active: false }
+      )
+    );
+
+    // 우측 탭바 상태 업데이트
+    setIsTabbarRight((prevTabs) =>
+      prevTabs.map((tab) =>
+        tab.path === location.pathname
+          ? { ...tab, active: true }
+          : { ...tab, active: false }
+      )
+    );
+  }, [location.pathname]);
 
   return (
     <div id="TabBar">
@@ -75,7 +103,7 @@ export const Tabbar = () => {
                 item.active ? "active" : ""
               }`}
               key={idx}
-              onClick={() => handleTabBar(item.id)}
+              onClick={() => handleTabBar(item)}
             >
               {item.name}
             </button>
@@ -88,7 +116,7 @@ export const Tabbar = () => {
                 item.active ? "active" : ""
               }`}
               key={item.id}
-              onClick={() => handleTabBar(item.id)}
+              onClick={() => handleTabBar(item)}
             >
               {item.name}
             </button>

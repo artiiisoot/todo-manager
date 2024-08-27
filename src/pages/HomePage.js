@@ -52,17 +52,49 @@ export const HomePage = () => {
       try {
         // todays 문서 불러오기
         const todayData = await getDocs(todays);
-        const todayTasks = todayData.docs.map((doc) => ({
+        let todayTasks = todayData.docs.map((doc) => ({
           id: doc.id,
           data: doc.data(),
         }));
 
         // projects 문서 불러오기
         const projectData = await getDocs(projects);
-        const projectTasks = projectData.docs.map((doc) => ({
+        let projectTasks = projectData.docs.map((doc) => ({
           id: doc.id,
           data: doc.data(),
         }));
+
+        todayTasks = todayTasks.sort((a, b) => {
+          const isAStart =
+            a.data.state.name === "before" || a.data.state.name === "start";
+          const isBStart =
+            b.data.state.name === "before" || b.data.state.name === "start";
+
+          if (isAStart && !isBStart) {
+            return -1; // a가 b보다 상위로
+          } else if (!isAStart && isBStart) {
+            return 1; // b가 a보다 상위로
+          } else {
+            // 둘 다 "start"가 아니거나 둘 다 "start"일 경우 createDate로 정렬
+            return a.data.createDate - b.data.createDate;
+          }
+        });
+
+        projectTasks = todayTasks.sort((a, b) => {
+          const isAStart =
+            a.data.state.name === "before" || a.data.state.name === "start";
+          const isBStart =
+            b.data.state.name === "before" || b.data.state.name === "start";
+
+          if (isAStart && !isBStart) {
+            return -1; // a가 b보다 상위로
+          } else if (!isAStart && isBStart) {
+            return 1; // b가 a보다 상위로
+          } else {
+            // 둘 다 "start"가 아니거나 둘 다 "start"일 경우 createDate로 정렬
+            return a.data.createDate - b.data.createDate;
+          }
+        });
 
         // 상태 업데이트
         setTodaysData(todayTasks);
@@ -108,7 +140,6 @@ export const HomePage = () => {
                         <TodayCard
                           todayItem={today.data}
                           id={today.id}
-                         
                           handleClickDetail={handleClickDetail}
                         />
                       </SwiperSlide>
