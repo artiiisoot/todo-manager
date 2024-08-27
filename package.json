@@ -51,7 +51,7 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "https://artiiisoot.github.io/todo-manager/",
+  "homepage": "https://artiiisoot.github.io/todo-manager",
   "devDependencies": {
     "tailwindcss": "^3.4.4"
   }
