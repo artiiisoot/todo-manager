@@ -17,17 +17,18 @@ import { ModalHeader } from "./components/ModalHeader";
 
 export const DialogAddTags = () => {
   const dispatch = useDispatch();
+  const uid = useSelector((state) => state.auth.uid);
   const db = getFirestore();
-  const dbTags = collection(db, "tags");
+  const dbTags = collection(db, "users", uid, "tags");
   const [showErrMsg, setShowErrMsg] = useState(false);
   const [isTag, setIsTag] = useState("");
   const [tagData, setTagData] = useState([]);
   const taskTags = useSelector((state) => state.task.value.tags);
 
   function handleTag(e) {
-    if(e.target.value.length > 18) {
-      alert('18자 이상 입력할 수 없어요')
-      return false
+    if (e.target.value.length > 18) {
+      alert("18자 이상 입력할 수 없어요");
+      return false;
     }
     setIsTag(e.target.value);
   }
@@ -50,7 +51,7 @@ export const DialogAddTags = () => {
 
   async function handleDeleteTag(id) {
     try {
-      await deleteDoc(doc(db, "tags", id));
+      await deleteDoc(doc(db, "users", uid, "tags", id));
     } catch (error) {
       console.error("Error deleting document: ", error);
     }

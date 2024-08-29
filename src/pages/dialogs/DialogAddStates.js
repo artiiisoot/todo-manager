@@ -5,7 +5,6 @@ import { getTransName } from "../../redux/reducers/taskReducer";
 import { getState } from "../../redux/reducers/taskReducer";
 import { getModalState } from "../../redux/reducers/modalReducer";
 
-
 import {
   collection,
   getFirestore,
@@ -20,6 +19,7 @@ import { ModalHeader } from "./components/ModalHeader";
 
 export const DialogAddStates = ({ item }) => {
   const dispatch = useDispatch();
+  const uid = useSelector((state) => state.auth.uid);
   const db = getFirestore();
   const dbStates = collection(db, "states");
   const [showErrMsg, setShowErrMsg] = useState(false);
@@ -51,7 +51,7 @@ export const DialogAddStates = ({ item }) => {
   async function handleDeleteState(e, id) {
     e.stopPropagation();
     try {
-      await deleteDoc(doc(db, "states", id));
+      await deleteDoc(doc(db, "users", uid, "states", id));
     } catch (error) {
       console.error("Error deleting document: ", error);
     }
@@ -92,20 +92,18 @@ export const DialogAddStates = ({ item }) => {
                 </p>
               </div>
             </div>
-          ) : (
-            // <div className="input">
-            //   <input
-            //     type="text"
-            //     placeholder="Search for the option"
-            //     value={isState}
-            //     onChange={(e) => setIsState(e.target.value)}
-            //   />
-            //   {showErrMsg && (
-            //     <span className="error-message">error message</span>
-            //   )}
-            // </div>
-            null
-          )}
+          ) : // <div className="input">
+          //   <input
+          //     type="text"
+          //     placeholder="Search for the option"
+          //     value={isState}
+          //     onChange={(e) => setIsState(e.target.value)}
+          //   />
+          //   {showErrMsg && (
+          //     <span className="error-message">error message</span>
+          //   )}
+          // </div>
+          null}
 
           <div className="divider"></div>
 
@@ -138,18 +136,18 @@ export const DialogAddStates = ({ item }) => {
                       <p className={item.name}>
                         {getTransName(item.name)}
 
-                        <button
+                        {/* <button
                           className="icons icons-sm material-icons-outlined"
                           onClick={(e) => handleDeleteState(e, item.id)}
                         >
                           close
-                        </button>
+                        </button> */}
                       </p>
                     </div>
 
-                    <button className="icons material-icons-outlined">
+                    {/* <button className="icons material-icons-outlined">
                       more_horiz
-                    </button>
+                    </button> */}
                   </li>
                 ))}
               </ul>

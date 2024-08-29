@@ -19,9 +19,10 @@ import { useNavigate } from "react-router-dom";
 
 export const DialogAddGroup = () => {
   const dispatch = useDispatch();
+  const uid = useSelector((state) => state.auth.uid);
   const navigate = useNavigate();
   const db = getFirestore();
-  const dbGroup = collection(db, "group");
+  const dbGroup = collection(db, "users", uid, "group");
   const [showAddInput, setShowAddInput] = useState(false);
   const [isGroup, setIsGroup] = useState("");
   const [groupData, setGroupData] = useState("");
@@ -52,7 +53,7 @@ export const DialogAddGroup = () => {
   async function handleDeleteState(e, id) {
     e.stopPropagation();
     try {
-      await deleteDoc(doc(db, "group", id));
+      await deleteDoc(doc(db, "users", uid, "group", id));
     } catch (error) {
       console.error("Error deleting document: ", error);
     }
