@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getHeaderState } from "../redux/reducers/headerReducer";
 
 import { getFirestore, collection, getDocs } from "firebase/firestore";
@@ -20,10 +20,10 @@ import { ProjectCard } from "./components/ProjectCard ";
 export const HomePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const uid = useSelector((state) => state.auth.uid);
   const db = getFirestore();
-  const todays = collection(db, "todays");
-  const projects = collection(db, "projects");
-  const [triggerFetch, setTriggerFetch] = useState(false);
+  const todays = collection(db, "users", uid, "todays");
+  const projects = collection(db, "users", uid, "projects");
   const [taskType, setTaskType] = useState([
     {
       name: "Todays",
@@ -44,7 +44,7 @@ export const HomePage = () => {
 
   function handleClickDetail(category, id) {
     dispatch(getHeaderState({ title: "Detail" }));
-    navigate(`/detail?category=${category}&id=${id}`);
+    navigate(`/detail?uid=${uid}&category=${category}&id=${id}`);
   }
 
   useEffect(() => {
@@ -57,12 +57,16 @@ export const HomePage = () => {
           data: doc.data(),
         }));
 
-        // projects 문서 불러오기
+        console.log("todayTasks", todayTasks);
+
+        // // projects 문서 불러오기
         const projectData = await getDocs(projects);
         let projectTasks = projectData.docs.map((doc) => ({
           id: doc.id,
           data: doc.data(),
         }));
+
+        console.log("projectTasks", projectTasks);
 
         todayTasks = todayTasks.sort((a, b) => {
           const isAStart =
@@ -80,7 +84,7 @@ export const HomePage = () => {
           }
         });
 
-        projectTasks = todayTasks.sort((a, b) => {
+        projectTasks = projectTasks.sort((a, b) => {
           const isAStart =
             a.data.state.name === "before" || a.data.state.name === "start";
           const isBStart =
@@ -96,7 +100,7 @@ export const HomePage = () => {
           }
         });
 
-        // 상태 업데이트
+        // // 상태 업데이트
         setTodaysData(todayTasks);
         setProjectsData(projectTasks);
       } catch (error) {

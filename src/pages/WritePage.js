@@ -29,6 +29,7 @@ import { DialogAddGroup } from "./dialogs/DialogAddGroup";
 export const WritePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const uid = useSelector((state) => state.auth.uid);
   const headerTitle = useSelector((state) => state.header.value.title);
   const headerType = useSelector((state) => state.header.value.type);
   const modalType = useSelector((state) => state.modal.value.type);
@@ -57,7 +58,7 @@ export const WritePage = () => {
   async function submitTaskData() {
     if (taskCategory === "Today") {
       try {
-        await addDoc(collection(db, "todays"), {
+        await addDoc(collection(db, "users", uid, "todays"), {
           title: taskTitle,
           category: taskCategory,
           state: taskState,
@@ -77,7 +78,7 @@ export const WritePage = () => {
     }
     if (taskCategory === "Project") {
       try {
-        const docRef = await addDoc(collection(db, "projects"), {
+        const docRef = await addDoc(collection(db, "users", uid, "projects"), {
           title: taskTitle,
           category: taskCategory,
           state: taskState,
@@ -91,7 +92,10 @@ export const WritePage = () => {
         const uploadPromises = [];
         for (let i = 0; i < images.length; i++) {
           const image = images[i];
-          const storageRef = ref(storage, `images/${docRef?.id}/${image.name}`);
+          const storageRef = ref(
+            storage,
+            `images/${uid}/${docRef?.id}/${image.name}`
+          );
           const uploadTask = uploadBytesResumable(storageRef, image);
 
           uploadPromises.push(
@@ -107,9 +111,12 @@ export const WritePage = () => {
                   const downloadURL = await getDownloadURL(
                     uploadTask.snapshot.ref
                   );
-                  await updateDoc(doc(db, "projects", docRef.id), {
-                    image: downloadURL,
-                  });
+                  await updateDoc(
+                    doc(db, "users", uid, "projects", docRef.id),
+                    {
+                      image: downloadURL,
+                    }
+                  );
                   setUrls((prevUrls) => [...prevUrls, downloadURL]);
                   resolve(downloadURL);
                 }

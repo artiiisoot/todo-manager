@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getHeaderState } from "../redux/reducers/headerReducer";
 
 import { getFirestore, collection, getDocs } from "firebase/firestore";
@@ -16,14 +16,15 @@ export const CalendarPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const uid = useSelector((state) => state.auth.uid);
   const queryParams = new URLSearchParams(location.search);
   const defaultTab = queryParams.get("tab") || "todays";
   const [pageTitle, setPageTitle] = useState("Todays");
   const [activeTab, setActiveTab] = useState(defaultTab);
 
   const db = getFirestore();
-  const todays = collection(db, "todays");
-  const projects = collection(db, "projects");
+  const todays = collection(db, "users", uid, "todays");
+  const projects = collection(db, "users", uid, "projects");
   const [todaysData, setTodaysData] = useState([]);
   const [projectsData, setProjectsData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -39,7 +40,7 @@ export const CalendarPage = () => {
 
   function handleClickDetail(category, id) {
     dispatch(getHeaderState({ title: "Detail" }));
-    navigate(`/detail?category=${category}&id=${id}`);
+    navigate(`/detail?id=${uid}&category=${category}&id=${id}`);
   }
 
   useEffect(() => {

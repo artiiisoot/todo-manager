@@ -28,6 +28,7 @@ import { formatDate } from "../utils/dateUtils";
 
 export const DetailPage = () => {
   const dispatch = useDispatch();
+  const uid = useSelector((state) => state.auth.uid);
   const headerTitle = useSelector((state) => state.header.value.title);
   const headerType = useSelector((state) => state.header.value.type);
   const modalType = useSelector((state) => state.modal.value.type);
@@ -47,8 +48,8 @@ export const DetailPage = () => {
   const itemId = queryParams.get("id");
 
   const db = getFirestore();
-  const todays = collection(db, "todays");
-  const projects = collection(db, "projects");
+  const todays = collection(db, "users", uid, "todays");
+  const projects = collection(db, "users", uid, "projects");
   const [tasksData, setTasksData] = useState([]);
   const [itemData, setItemData] = useState(null);
   const [taskTitle, setTaskTitle] = useState("");
@@ -60,7 +61,7 @@ export const DetailPage = () => {
   async function submitTaskData() {
     if (taskCategory === "Today") {
       try {
-        const taskDocRef = doc(db, "todays", itemId);
+        const taskDocRef = doc(db, "users", uid, "todays", itemId);
         await updateDoc(taskDocRef, {
           title: taskTitle,
           category: taskCategory,
@@ -81,7 +82,7 @@ export const DetailPage = () => {
     }
     if (taskCategory === "Project") {
       try {
-        const taskDocRef = doc(db, "projects", itemId);
+        const taskDocRef = doc(db, "users", uid, "projects", itemId);
         await updateDoc(taskDocRef, {
           title: taskTitle,
           category: taskCategory,

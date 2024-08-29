@@ -4,6 +4,7 @@ import headerReducer from "./reducers/headerReducer";
 import modalReducer from "./reducers/modalReducer";
 import taskReducer from "./reducers/taskReducer";
 import dateReducer from "./reducers/dateReducer";
+import authReducer from "./reducers/authReducer";
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     modal: modalReducer,
     task: taskReducer,
     date: dateReducer,
+    auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }),

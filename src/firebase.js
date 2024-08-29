@@ -1,7 +1,12 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "@firebase/firestore";
 import { getStorage } from "firebase/storage";
-
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -24,5 +29,15 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+// 로그인 함수
+export const login = (email, password) =>
+  signInWithEmailAndPassword(auth, email, password);
+// 로그아웃 함수
+export const logout = () => signOut(auth);
+// 인증 상태 변경 감지
+export const onAuthStateChangedListener = (callback) =>
+  onAuthStateChanged(auth, callback);

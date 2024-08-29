@@ -8,7 +8,7 @@ export const AppLayout = () => {
   const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
-    if (location.pathname === "/write") {
+    if (location.pathname === "/write" || location.pathname === "/detail") {
       setIsHidden(true);
     } else {
       setIsHidden(false);

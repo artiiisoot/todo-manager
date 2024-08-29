@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+import { auth } from "../../firebase";
+import { logout } from "../../redux/reducers/authReducer";
 
 export const Header = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isAlarm, setIsAlarm] = useState(true);
   const [isNavbar, setIsNavbar] = useState(false);
@@ -43,13 +48,18 @@ export const Header = () => {
   };
 
   const handleList = (item) => {
-    navigate(item.route)
-    
+    navigate(item.route);
 
     // if (isAlarm) {
     //   setIsAlarm(false);
     // }
   };
+
+  function handleLogout() {
+    auth.signOut();
+    localStorage.removeItem("accessToken");
+    dispatch(logout());
+  }
 
   return (
     <>
@@ -97,8 +107,8 @@ export const Header = () => {
               ))}
             </div>
 
-            <div className="nav-footer button-effect">
-              <h1>Sign out</h1>
+            <div className="nav-footer button-effect" onClick={handleLogout}>
+              <h1>Log out</h1>
             </div>
           </div>
         </div>
