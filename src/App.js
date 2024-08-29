@@ -65,26 +65,28 @@ function App() {
   };
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <PrivateRoute>
-            <AppLayout />
-          </PrivateRoute>
-        }
-      >
-        <Route index element={<HomePage />} />
-        <Route path="tasks" element={<TasksPage />} />
-        <Route path="calendar" element={<CalendarPage />} />
-        <Route path="write" element={<WritePage />} />
-        <Route path="detail" element={<DetailPage />} />
-        <Route path="test" element={<DataBase />} />
-        <Route path="settings" element={<div>준비중</div>} />
-      </Route>
+    <div className="container">
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <AppLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<HomePage />} />
+          <Route path="tasks" element={<TasksPage />} />
+          <Route path="calendar" element={<CalendarPage />} />
+          <Route path="write" element={<WritePage />} />
+          <Route path="detail" element={<DetailPage />} />
+          <Route path="test" element={<DataBase />} />
+          <Route path="settings" element={<div>준비중</div>} />
+        </Route>
 
-      <Route path="signin" element={<SigninPage />} />
-    </Routes>
+        <Route path="signin" element={<SigninPage />} />
+      </Routes>
+    </div>
   );
 }
 

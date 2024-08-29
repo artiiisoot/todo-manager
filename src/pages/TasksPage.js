@@ -62,7 +62,7 @@ export const TasksPage = () => {
 
   function handleClickDetail(category, id) {
     dispatch(getHeaderState({ title: "Detail" }));
-    navigate(`/detail?id=${uid}&category=${category}&id=${id}`);
+    navigate(`/detail?uid=${uid}&category=${category}&id=${id}`);
   }
 
   const onGoingCount =

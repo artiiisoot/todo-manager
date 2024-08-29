@@ -15,8 +15,8 @@ export const SigninPage = () => {
   const navigate = useNavigate();
   const [isSigninStart, setIsSigninStart] = useState(false);
   const [isSignupStart, setIsSignupStart] = useState(false);
-  const [email, setEmail] = useState("artiiisoot@gmail.com");
-  const [password, setPassword] = useState("1q2w3e");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState("");
 
