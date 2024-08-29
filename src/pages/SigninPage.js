@@ -79,10 +79,11 @@ export const SigninPage = () => {
             const user = userCredential.user;
             const token = await user.getIdToken();
             localStorage.setItem("accessToken", token);
+            console.log("user", user);
             setEmail("");
             setPassword("");
             setPasswordConfirm("");
-            dispatch(login());
+            dispatch(login({ uid: user.uid, token }));
             alert("회원가입 성공!");
             navigate("/");
           } else {
