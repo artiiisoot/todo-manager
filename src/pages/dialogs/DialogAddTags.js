@@ -33,7 +33,12 @@ export const DialogAddTags = () => {
     setIsTag(e.target.value);
   }
   function handleTagList(item) {
-    dispatch(getTags([...taskTags, { name: item }]));
+    const sameTag = taskTags.find((tag) => tag.name === item);
+    if (sameTag) {
+      return;
+    } else {
+      dispatch(getTags([...taskTags, { name: item }]));
+    }
   }
   function handleDeleteTagList(e, id) {
     e.preventDefault();

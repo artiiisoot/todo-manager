@@ -62,7 +62,6 @@ export const Tabbar = () => {
 
   function handleWrite() {
     navigate("/write");
-    dispatch(getHeaderState({ title: "Tasks" }));
   }
 
   useEffect(() => {

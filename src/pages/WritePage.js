@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
+//FIREBASE AUTH
+import { useAuth } from "../provider/AuthProvider";
+import { useData } from "../provider/DataProvider";
+
 import { useDispatch, useSelector } from "react-redux";
 import { getCategory, resetState } from "../redux/reducers/taskReducer";
 
@@ -25,21 +29,30 @@ import { DatePickerComponent } from "./components/DatePickerComponent";
 import { DialogAddStates } from "./dialogs/DialogAddStates";
 import { DialogAddTags } from "./dialogs/DialogAddTags";
 import { DialogAddGroup } from "./dialogs/DialogAddGroup";
+import { getHeaderState } from "../redux/reducers/headerReducer";
+import { setLoading } from "../redux/reducers/loadingReducer";
+import { LoadingUI } from "./components/LoadingUI";
 
 export const WritePage = () => {
+  const { uid } = useAuth();
+  // const { updateData } = useData();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const uid = useSelector((state) => state.auth.uid);
-  const headerTitle = useSelector((state) => state.header.value.title);
-  const headerType = useSelector((state) => state.header.value.type);
-  const modalType = useSelector((state) => state.modal.value.type);
-  const modalOpen = useSelector((state) => state.modal.value.open);
-  const categoryList = useSelector((state) => state.task.value.categoryList);
-  const taskCategory = useSelector((state) => state.task.value.category);
-  const taskState = useSelector((state) => state.task.value.state);
-  const taskGroup = useSelector((state) => state.task.value.group);
-  const taskTags = useSelector((state) => state.task.value.tags);
+  const { title: headerTitle, type: headerType } = useSelector(
+    (state) => state.header
+  );
+  const { type: modalType, open: modalOpen } = useSelector(
+    (state) => state.modal.value
+  );
+  const {
+    categoryList,
+    category: taskCategory,
+    state: taskState,
+    group: taskGroup,
+    tags: taskTags,
+  } = useSelector((state) => state.task.value);
   const selectedDate = useSelector((state) => state.date.selectedDate);
+  const { loading } = useSelector((state) => state.loading);
 
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDesc, setTaskDesc] = useState("");
@@ -58,6 +71,7 @@ export const WritePage = () => {
   async function submitTaskData() {
     if (taskCategory === "Today") {
       try {
+        dispatch(setLoading(true));
         await addDoc(collection(db, "users", uid, "todays"), {
           title: taskTitle,
           category: taskCategory,
@@ -78,6 +92,7 @@ export const WritePage = () => {
     }
     if (taskCategory === "Project") {
       try {
+        dispatch(setLoading(true));
         const docRef = await addDoc(collection(db, "users", uid, "projects"), {
           title: taskTitle,
           category: taskCategory,
@@ -89,41 +104,46 @@ export const WritePage = () => {
         });
 
         // 이미지 업로드
-        const uploadPromises = [];
-        for (let i = 0; i < images.length; i++) {
-          const image = images[i];
+        const uploadPromises = images.map((image) => {
           const storageRef = ref(
             storage,
-            `images/${uid}/${docRef?.id}/${image.name}`
+            `images/${uid}/${docRef.id}/${image.name}`
           );
           const uploadTask = uploadBytesResumable(storageRef, image);
 
-          uploadPromises.push(
-            new Promise((resolve, reject) => {
-              uploadTask.on(
-                "state_changed",
-                null,
-                (error) => {
-                  console.error(error);
-                  reject(error);
-                },
-                async () => {
-                  const downloadURL = await getDownloadURL(
-                    uploadTask.snapshot.ref
-                  );
-                  await updateDoc(
-                    doc(db, "users", uid, "projects", docRef.id),
-                    {
-                      image: downloadURL,
-                    }
-                  );
-                  setUrls((prevUrls) => [...prevUrls, downloadURL]);
-                  resolve(downloadURL);
-                }
-              );
-            })
-          );
+          return new Promise((resolve, reject) => {
+            uploadTask.on(
+              "state_changed",
+              null,
+              (error) => {
+                console.error(error);
+                reject(error);
+              },
+              async () => {
+                const downloadURL = await getDownloadURL(
+                  uploadTask.snapshot.ref
+                );
+                resolve(downloadURL);
+              }
+            );
+          });
+        });
+
+        try {
+          const downloadURLs = await Promise.all(uploadPromises);
+
+          await updateDoc(doc(db, "users", uid, "projects", docRef.id), {
+            image: downloadURLs,
+          });
+
+          // URLs 상태 업데이트
+          await setUrls((prevUrls) => [...prevUrls, ...downloadURLs]);
+        } catch (error) {
+          console.error("Error uploading images:", error);
+        } finally {
+          dispatch(setLoading(false));
         }
+
         setTaskTitle("");
         setTaskDesc("");
         dispatch(resetState());
@@ -153,8 +173,12 @@ export const WritePage = () => {
   }
 
   useEffect(() => {
-    console.log("value", value);
-  }, [value]);
+    dispatch(getHeaderState({ title: "Tasks", type: "" }));
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(resetState());
+  }, []);
 
   return (
     <>
@@ -224,37 +248,39 @@ export const WritePage = () => {
           ></textarea>
         </div>
 
-        <div className="upload">
-          <div className="grid grid-cols-4  gap-4">
-            {prevImages.length > 3 ? null : (
-              <label htmlFor="file">
-                <button
-                  className="btn-file icon material-icons-outlined"
-                  onClick={() => imageRef.current?.click()}
-                >
-                  add
-                </button>
+        {taskCategory === "Project" && (
+          <div className="upload">
+            <div className="grid grid-cols-4  gap-4">
+              {prevImages.length > 3 ? null : (
+                <label htmlFor="file">
+                  <button
+                    className="btn-file icon material-icons-outlined"
+                    onClick={() => imageRef.current?.click()}
+                  >
+                    add
+                  </button>
 
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  id="file"
-                  className="input-hidden"
-                  ref={imageRef}
-                  onChange={onFileChange}
-                />
-              </label>
-            )}
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    id="file"
+                    className="input-hidden"
+                    ref={imageRef}
+                    onChange={onFileChange}
+                  />
+                </label>
+              )}
 
-            {prevImages.length > 0 &&
-              prevImages.map((img) => (
-                <div className="preview-img">
-                  <img src={img} alt="이미지 파일" />
-                </div>
-              ))}
+              {prevImages.length > 0 &&
+                prevImages.map((img) => (
+                  <div className="preview-img">
+                    <img src={img} alt="이미지 파일" />
+                  </div>
+                ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="button-group flex flex-row justify-end">
           <button onClick={() => navigate(-1)}>CANCEL</button>
@@ -267,6 +293,8 @@ export const WritePage = () => {
       {modalOpen && modalType === "state" ? <DialogAddStates /> : null}
       {modalOpen && modalType === "group" ? <DialogAddGroup /> : null}
       {modalOpen && modalType === "tag" ? <DialogAddTags /> : null}
+
+      {loading && <LoadingUI />}
     </>
   );
 };

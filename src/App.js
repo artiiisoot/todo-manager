@@ -1,17 +1,19 @@
-import { useState, useEffect } from "react";
-import {
-  Routes,
-  Route,
-  useNavigate,
-  useLocation,
-  Navigate,
-} from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, useEffect, useCallback } from "react";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { login, logout } from "./redux/reducers/authReducer";
 
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import {
+  getAuth,
+  onAuthStateChanged,
+  setPersistence,
+  signInWithEmailAndPassword,
+  browserSessionPersistence,
+} from "firebase/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 
 import { AppLayout } from "./layout/AppLayout";
+import { PrivateRoute } from "./pages/route/PrivateRoute";
 import { HomePage } from "./pages/HomePage";
 import { CalendarPage } from "./pages/CalendarPage";
 import { WritePage } from "./pages/WritePage";
@@ -19,14 +21,49 @@ import { TasksPage } from "./pages/TasksPage";
 import { DetailPage } from "./pages/DetailPage";
 import { DataBase } from "./pages/DataBase";
 import { SigninPage } from "./pages/SigninPage";
+import { SettingsPage } from "./pages/SettingsPage";
+import { AccountPage } from "./pages/AccountPage";
+
+const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15분 (단위: 밀리초)
 
 function App() {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
-  const uid = useSelector((state) => state.auth.uid);
-  const token = useSelector((state) => state.auth.token);
+  const db = getFirestore();
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
+  const [lastActivityTime, setLastActivityTime] = useState(Date.now());
+
+  const resetTimer = useCallback(() => {
+    setLastActivityTime(Date.now());
+  }, []);
+
+  useEffect(() => {
+    const handleActivity = () => {
+      resetTimer();
+    };
+
+    window.addEventListener("mousemove", handleActivity);
+    window.addEventListener("keydown", handleActivity);
+
+    return () => {
+      window.removeEventListener("mousemove", handleActivity);
+      window.removeEventListener("keydown", handleActivity);
+    };
+  }, [resetTimer]);
+
+  useEffect(() => {
+    const checkAutoLogout = () => {
+      if (Date.now() - lastActivityTime > AUTO_LOGOUT_TIME) {
+        localStorage.removeItem("accessToken");
+        dispatch(logout());
+        navigate("/signin");
+      }
+    };
+
+    const interval = setInterval(checkAutoLogout, 1000);
+    return () => clearInterval(interval);
+  }, [lastActivityTime, dispatch, navigate]);
 
   useEffect(() => {
     const auth = getAuth();
@@ -34,7 +71,12 @@ function App() {
       if (user) {
         const token = await user.getIdToken(); // Firebase로부터 토큰을 새로 가져옴
         localStorage.setItem("accessToken", token); // 로컬 스토리지에 토큰 저장
-        dispatch(login({ uid: user.uid, token })); // Redux에 로그인 상태 저장
+
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          dispatch(login({ uid: user.uid, token, level: userData.level }));
+        }
       } else {
         localStorage.removeItem("accessToken"); // 로그아웃된 경우 로컬 스토리지에서 토큰 제거
         dispatch(logout());
@@ -43,50 +85,42 @@ function App() {
     });
   }, [dispatch]);
 
-  useEffect(() => {
-    console.log("localStorage", localStorage.getItem("accessToken"));
-  }, []);
-
-  useEffect(() => {
-    console.log("uid", uid);
-    console.log("token", token);
-  }, [uid, token]);
-
-  useEffect(() => {
-    if (location.pathname === "/settings") {
-      alert("준비중");
-      navigate("/");
-    }
-  }, [location]);
-
-  const PrivateRoute = ({ children }) => {
-    if (loading) return <div>Loading...</div>; // 로딩 중일 때는 로딩 메시지 표시
-    return token ? children : <Navigate to="/signin" replace />;
-  };
+  // useEffect(() => {
+  //   if (location.pathname === "/settings") {
+  //     alert("준비중");
+  //     navigate("/");
+  //   }
+  // }, [location]);
 
   return (
-    <div className="container">
-      <Routes>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <PrivateRoute loading={loading}>
+            <AppLayout />
+          </PrivateRoute>
+        }
+      >
+        <Route index element={<HomePage />} />
+        <Route path="tasks" element={<TasksPage />} />
+        <Route path="calendar" element={<CalendarPage />} />
+        <Route path="write" element={<WritePage />} />
+        <Route path="detail" element={<DetailPage />} />
         <Route
-          path="/"
+          path="test"
           element={
-            <PrivateRoute>
-              <AppLayout />
+            <PrivateRoute requiredLevel={1}>
+              <DataBase />
             </PrivateRoute>
           }
-        >
-          <Route index element={<HomePage />} />
-          <Route path="tasks" element={<TasksPage />} />
-          <Route path="calendar" element={<CalendarPage />} />
-          <Route path="write" element={<WritePage />} />
-          <Route path="detail" element={<DetailPage />} />
-          <Route path="test" element={<DataBase />} />
-          <Route path="settings" element={<div>준비중</div>} />
-        </Route>
+        />
+        <Route path="settings" element={<SettingsPage />} />
+        <Route path="account" element={<AccountPage />} />
+      </Route>
 
-        <Route path="signin" element={<SigninPage />} />
-      </Routes>
-    </div>
+      <Route path="signin" element={<SigninPage />} />
+    </Routes>
   );
 }
 

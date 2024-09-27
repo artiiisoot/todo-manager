@@ -1,16 +1,16 @@
-import { useEffect } from "react";
+import React, { useState } from "react";
+
+// REDUX
+import { useDispatch, useSelector } from "react-redux";
+import { formatDate } from "../../utils/dateUtils";
+import { setLoadingImage } from "../../redux/reducers/loadingReducer";
+
+// COMPONENT
+import Skeleton from "react-loading-skeleton"; // Skeleton 라이브러리
 
 export const TodayCard = ({ todayItem, id, handleClickDetail }) => {
-  let date = todayItem.createDate.toDate();
-  let day = date.getDate();
-  let month = date.getMonth() + 1;
-  let year = date.getFullYear();
-  let stringified = todayItem.createDate.toDate().toISOString();
-  var split1 = stringified.split("T");
-  var time = split1[1].split(".");
-
-  const formatDate = `${year}/${month}/${day}`;
-  const formatTime = time[0];
+  const dispatch = useDispatch();
+  const { loadingImage } = useSelector((state) => state.loading);
 
   return (
     <div
@@ -18,28 +18,45 @@ export const TodayCard = ({ todayItem, id, handleClickDetail }) => {
       className={`content-item button-effect ${todayItem.state.name}`}
       onClick={() => handleClickDetail(todayItem.category, id)}
     >
-      <div className="card-top">
-        <div className="tag">
-          {Array.from(todayItem.tags).map((tag, idx) => (
-            <div className="chip" key={idx}>
-              <p className="ellipsis-1">{tag.name}</p>
-            </div>
-          ))}
-        </div>
-        <p className="title">{todayItem.title}</p>
-        <p className="category">{todayItem.category}</p>
-        <i className="icons material-icons">done</i>
-      </div>
-
-      <div className="card-bottom">
-        <div className="create-date flex">
-          <p className="pr-2">Date</p>
-          <div className="date-item flex flex-1 justify-between">
-            <p style={{ visibility: "hidden" }}>{formatTime}</p>
-            <p>{formatDate}</p>
+      {!loadingImage ? (
+        <div className="card-top">
+          <div className="card-top-inner">
+            <Skeleton style={{ display: "flex" }} width="100%" />
+            <Skeleton style={{ display: "flex" }} width="100%" />
+            <Skeleton style={{ display: "flex" }} width="100%" />
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="card-top">
+          <div className="tag">
+            {Array.from(todayItem.tags).map((tag, idx) => (
+              <div className="chip" key={idx}>
+                <p className="ellipsis-1">{tag.name}</p>
+              </div>
+            ))}
+          </div>
+          <h5>{todayItem.title}</h5>
+          <p>{todayItem.category}</p>
+        </div>
+      )}
+
+      {!loadingImage ? (
+        <div className="card-bottom">
+          <Skeleton style={{ display: "flex" }} width="100%" />
+        </div>
+      ) : (
+        <div className="card-bottom">
+          <div className="create-date flex">
+            <p className="pr-2">Date</p>
+            <div className="date-item flex flex-1 justify-between">
+              <p style={{ visibility: "hidden" }}>
+                {formatDate(todayItem.createDate.toDate())}
+              </p>
+              <p>{formatDate(todayItem.createDate.toDate())}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -14,6 +14,7 @@ let initialStateValue = {
   group: "",
   tags: [],
   createDate: "",
+  image: null,
 };
 
 const taskSlice = createSlice({
@@ -32,15 +33,14 @@ const taskSlice = createSlice({
       state.value.group = action.payload;
     },
     getTags(state, action) {
-      console.log(
-        "state.tags",
-        state.value.tags.map((item) => item.name)
-      );
       state.value.tags = action.payload;
     },
     getCreateDate(state, action) {
-      console.log("state.createDate", state.createDate);
       state.value.createDate = action.payload;
+    },
+    setImage(state, action) {
+      console.log("state.image", state.value.image);
+      state.value.image = action.payload
     },
     getTaskData(state, action) {
       state.value = action.payload;
@@ -62,6 +62,7 @@ export const {
   getState,
   getGroup,
   getTags,
+  setImage,
   getCreateDate,
   resetState,
 } = taskSlice.actions;

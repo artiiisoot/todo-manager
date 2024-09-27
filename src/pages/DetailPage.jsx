@@ -25,12 +25,13 @@ import { DialogAddTags } from "./dialogs/DialogAddTags";
 import { DialogAddGroup } from "./dialogs/DialogAddGroup";
 
 import { formatDate } from "../utils/dateUtils";
+import { getHeaderState } from "../redux/reducers/headerReducer";
 
 export const DetailPage = () => {
   const dispatch = useDispatch();
   const uid = useSelector((state) => state.auth.uid);
-  const headerTitle = useSelector((state) => state.header.value.title);
-  const headerType = useSelector((state) => state.header.value.type);
+  const headerTitle = useSelector((state) => state.header.title);
+  const headerType = useSelector((state) => state.header.type);
   const modalType = useSelector((state) => state.modal.value.type);
   const modalOpen = useSelector((state) => state.modal.value.open);
   const categoryList = useSelector((state) => state.task.value.categoryList);
@@ -40,6 +41,8 @@ export const DetailPage = () => {
   const taskTags = useSelector((state) => state.task.value.tags);
   const taskCreateDate = useSelector((state) => state.task.value.createDate);
   const selectedDate = useSelector((state) => state.date.selectedDate);
+
+  const loading = useSelector(state => state.loading.loading)
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -136,6 +139,10 @@ export const DetailPage = () => {
 
     fetchData();
   }, [itemCategory]);
+
+  useEffect(() => {
+    dispatch(getHeaderState({ title: "Tasks", type: "default" }));
+  }, [dispatch]);
 
   useEffect(() => {
     if (tasksData.length > 0) {
@@ -240,6 +247,13 @@ export const DetailPage = () => {
           </button>
         </div>
       </main>
+
+      {loading && (
+        <div className="modal loading">
+          <div class="dot-pulse"></div>
+        </div>
+      )}
+
       {modalOpen && modalType === "state" ? (
         <DialogAddStates item={itemData?.state} />
       ) : null}

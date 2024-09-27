@@ -15,7 +15,7 @@ export const TasksPage = () => {
   const dispatch = useDispatch();
   const uid = useSelector((state) => state.auth.uid);
   const queryParams = new URLSearchParams(location.search);
-  const defaultTab = queryParams.get("tab") || "todays";
+  // const defaultTab = queryParams.get("tab") || "todays";
 
   const db = getFirestore();
   const todays = collection(db, "users", uid, "todays");
@@ -30,9 +30,8 @@ export const TasksPage = () => {
       name: "Projects",
     },
   ]);
-  const [pageTitle, setPageTitle] = useState("Todays");
-  const [activeTab, setActiveTab] = useState(defaultTab);
-  const [onGoingTask, setOnGoingTask] = useState("");
+  // const [activeTab, setActiveTab] = useState(defaultTab);
+  const [currentTab, setCurrentTab] = useState("");
 
   function handleWrite() {
     navigate("/write");
@@ -40,18 +39,14 @@ export const TasksPage = () => {
   }
 
   function handleTabBtn(type) {
-    console.log("click");
-
     switch (type) {
       case "Todays":
-        setPageTitle(type);
-        setActiveTab(type);
+        setCurrentTab(type);
         navigate(`?tab=${type}`);
         break;
 
       case "Projects":
-        setPageTitle(type);
-        setActiveTab(type);
+        setCurrentTab(type);
         navigate(`?tab=${type}`);
         break;
 
@@ -66,23 +61,40 @@ export const TasksPage = () => {
   }
 
   const onGoingCount =
-    pageTitle === "Todays"
+    currentTab === "Todays"
       ? todaysData.filter(
           (task) =>
             task.data.state.name === "before" ||
             task.data.state.name === "start"
         ).length
-      : projectsData.filter(
+      : currentTab === "Projects"
+      ? projectsData.filter(
           (task) =>
             task.data.state.name === "before" ||
             task.data.state.name === "start"
-        ).length;
+        ).length
+      : null;
 
   const onCompleteCount =
-    pageTitle === "Todays"
+    currentTab === "Todays"
       ? todaysData.filter((task) => task.data.state.name === "complete").length
       : projectsData.filter((task) => task.data.state.name === "complete")
           .length;
+
+  useEffect(() => {
+    const paramsName = queryParams.get("tab");
+    switch (paramsName) {
+      case "Todays":
+        setCurrentTab(paramsName);
+        break;
+      case "Projects":
+        setCurrentTab(paramsName);
+        break;
+
+      default:
+        break;
+    }
+  }, [queryParams]);
 
   useEffect(() => {
     const getData = async () => {
@@ -145,7 +157,7 @@ export const TasksPage = () => {
   }, []);
 
   useEffect(() => {
-    setActiveTab(queryParams.get("tab") || "todays");
+    setCurrentTab(queryParams.get("tab") || "todays");
   }, [location.search]);
 
   return (
@@ -153,9 +165,9 @@ export const TasksPage = () => {
       <div className="header-page">
         <div className="tasks-progress">
           <div className="content-title flex items-center">
-            <p>{pageTitle} Tasks</p>
+            <p>{currentTab} Tasks</p>
           </div>
-          {pageTitle === "Todays" ? (
+          {currentTab === "Todays" ? (
             <ul className="flex gap-2 items-center justify-end">
               <li>
                 On Going <span>0{onGoingCount}</span>
@@ -165,7 +177,7 @@ export const TasksPage = () => {
                 Complete <span>0{onCompleteCount}</span>
               </li>
             </ul>
-          ) : pageTitle === "Projects" ? (
+          ) : currentTab === "Projects" ? (
             <ul className="flex gap-2 items-center justify-end">
               <li>
                 On Going <span>0{onGoingCount}</span>
@@ -180,7 +192,7 @@ export const TasksPage = () => {
         <div id="Tab">
           {tabs.map((tab, idx) => (
             <div
-              className={`tab-menu ${activeTab === tab.name ? "active" : ""}`}
+              className={`tab-menu ${currentTab === tab.name ? "active" : ""}`}
               key={idx}
               onClick={() => handleTabBtn(tab.name)}
             >
@@ -192,7 +204,7 @@ export const TasksPage = () => {
 
       <main className="pages">
         <div className="content today flex flex-col gap-2">
-          {activeTab === "Todays" && todaysData && todaysData.length > 0 ? (
+          {currentTab === "Todays" && todaysData && todaysData.length > 0 ? (
             <>
               {todaysData.map((today, idx) => (
                 <TodayCard
@@ -203,7 +215,7 @@ export const TasksPage = () => {
                 />
               ))}
             </>
-          ) : activeTab === "Projects" &&
+          ) : currentTab === "Projects" &&
             projectsData &&
             projectsData.length > 0 ? (
             <>

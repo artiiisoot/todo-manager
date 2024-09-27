@@ -1,33 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useDispatch, useSelector } from "react-redux";
+// PROVIDER
+import { useAuth } from "../provider/AuthProvider";
+import { useData } from "../provider/DataProvider";
+
+// REDUX
+import { useDispatch } from "react-redux";
 import { getHeaderState } from "../redux/reducers/headerReducer";
 
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+// FIREBASE
+import { getAuth } from "firebase/auth";
 
+// COMPONENTS
 import { TodayCard } from "./components/TodayCard";
 import { ProjectCard } from "./components/ProjectCard ";
 import { CalendarUI } from "./components/CalendarUI";
-
 import { formatDate } from "../utils/dateUtils";
 
 export const CalendarPage = () => {
-  const location = useLocation();
+  // const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const uid = useSelector((state) => state.auth.uid);
-  const queryParams = new URLSearchParams(location.search);
-  const defaultTab = queryParams.get("tab") || "todays";
-  const [pageTitle, setPageTitle] = useState("Todays");
-  const [activeTab, setActiveTab] = useState(defaultTab);
+  // const queryParams = new URLSearchParams(location.search);
 
-  const db = getFirestore();
-  const todays = collection(db, "users", uid, "todays");
-  const projects = collection(db, "users", uid, "projects");
-  const [todaysData, setTodaysData] = useState([]);
-  const [projectsData, setProjectsData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
+  const { user, uid } = useAuth();
+  const { todaysData, projectsData, updateData } = useData();
 
   const today = new Date();
   const [date, setDate] = useState(today);
@@ -43,44 +41,17 @@ export const CalendarPage = () => {
     navigate(`/detail?id=${uid}&category=${category}&id=${id}`);
   }
 
+  // 데이터를 업데이트하기 위한 useEffect
   useEffect(() => {
-    const getData = async () => {
-      try {
-        // todays 문서 불러오기
-        const todayData = await getDocs(todays);
-        const todayTasks = todayData.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-          createDate: formatDate(doc.data().createDate.toDate()),
-          // createDate: doc.data().createDate,
-        }));
+    if (user) {
+      updateData(); // user, uid, urls가 변경될 때 데이터를 업데이트
+      getAuth();
+    }
+  }, [user, uid]); //
 
-        // projects 문서 불러오기
-        const projectData = await getDocs(projects);
-        const projectTasks = projectData.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-          createDate: formatDate(doc.data().createDate.toDate()),
-        }));
-
-        // 상태 업데이트
-        setTodaysData(todayTasks);
-        setProjectsData(projectTasks);
-      } catch (error) {
-        console.error("Error fetching documents: ", error);
-      }
-    };
-
-    getData(); // 컴포넌트가 마운트될 때 데이터 불러오기
-  }, []);
-
-  useEffect(() => {
-    setActiveTab(queryParams.get("tab") || "todays");
-  }, [location.search]);
-  useEffect(() => {
-    console.log("todaysData", todaysData);
-    console.log("projectsData", projectsData);
-  }, [todaysData, projectsData]);
+  // useEffect(() => {
+  //   setActiveTab(queryParams.get("tab") || "todays");
+  // }, [location.search]);
 
   return (
     <div id="Calendar">
@@ -132,6 +103,7 @@ export const CalendarPage = () => {
               See All
             </button>
           </div>
+
           {projectsData.filter((project) => project.createDate === calendarDate)
             .length > 0 ? (
             projectsData
