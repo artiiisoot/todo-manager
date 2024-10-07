@@ -10,30 +10,14 @@ import { getHeaderState } from "../redux/reducers/headerReducer";
 import { DetailHeader } from "./components/DetailHeader";
 import { useAuth } from "../provider/AuthProvider";
 
-
 export const AccountPage = () => {
   const dispatch = useDispatch();
-  // const navigate = useNavigate();
-  // const location = useLocation();
-  // const queryParams = new URLSearchParams(location.search);
-  // const uid = queryParams.get("uid");
-  // const list = queryParams.get("list");
   const { headerTitle, headerType } = useSelector((state) => state.header);
-
   const imageRef = useRef(null);
   const [prevImages, setPrevImages] = useState("");
-  // const [image, setImage] = useState("");
-  // const image = useSelector((state) => state.task);
-  // const [url, setUrl] = useState(null);
   const [displayName, setDisplayName] = useState("닉네임을 설정하세요");
-
   const { user } = useAuth();
-  // const db = getFirestore();
-  // const storage = getStorage();
 
-  // function handleEditProfileThumb() {
-  //   console.log("edit profile");
-  // }
   function onFileChange(e) {
     const files = e.target.files;
     const theFile = files[0];

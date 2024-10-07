@@ -8,6 +8,7 @@ import { useData } from "../provider/DataProvider";
 // REDUX
 import { useDispatch, useSelector } from "react-redux";
 import { getHeaderState } from "../redux/reducers/headerReducer";
+import { setLoading } from "../redux/reducers/loadingReducer";
 
 // FIREBASE
 import { getAuth } from "firebase/auth";
@@ -24,7 +25,6 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import { setLoading } from "../redux/reducers/loadingReducer";
 
 export const HomePage = () => {
   const { user, uid } = useAuth();

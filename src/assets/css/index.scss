@@ -24,18 +24,31 @@ $color-error: #ce3426;
 $color-info: #106bda;
 
 $border-radius: 0.25rem;
+$app-max-width: 48rem;
 $header-height: 4.5rem;
 
-body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background: $color-gray-200;
-
-  &:has(.page) {
-    background: $color-white;
-  }
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
 }
 
+body {
+  width: 100%;
+  max-width: $app-max-width;
+  height: calc(100vh - 4.5rem);
+  min-height: calc(100vh - 4.5rem);
+  // padding: 0 1rem;
+  margin: 0 auto;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background: $color-gray-400;
+}
+#ROOT {
+  min-height: 100%;
+  background: $color-gray-200;
+}
 p,
 span {
   padding: 0;
@@ -279,11 +292,11 @@ button {
     }
   }
 }
-
 main {
   position: relative;
   padding: 0 1rem;
   margin-top: $header-height;
+  padding-bottom: 6rem;
 
   &.document {
     display: flex;
@@ -291,6 +304,7 @@ main {
     column-count: auto;
     gap: 1rem;
     height: calc(100vh - #{$header-height});
+    padding-bottom: unset;
     background: $color-white;
 
     .title {
@@ -430,18 +444,21 @@ main {
   &.pages {
     margin-top: unset;
     padding: 1rem;
+    padding-bottom: 6rem;
   }
   &.settings {
     display: flex;
     flex-direction: column;
     column-count: auto;
     gap: 1rem;
-    height: calc(100vh - #{$header-height * 2 + 2rem});
+    // height: calc(100vh - #{$header-height * 2 + 2rem});
+    height: calc(100vh - 4.5rem);
     background: $color-white;
     padding: 1rem;
 
     ul {
       li {
+        cursor: pointer;
         display: flex;
         column-count: auto;
         align-items: center;
@@ -459,9 +476,13 @@ main {
           background: $color-gray-100;
         }
         &.ver {
+          cursor: unset;
           font-size: 0.75rem;
           font-weight: normal;
           color: $color-gray-600;
+          &:hover {
+            background: unset;
+          }
         }
       }
     }
@@ -553,14 +574,16 @@ main {
   white-space: nowrap;
 }
 .wrapper {
-  padding-bottom: 6rem;
+  // padding-bottom: 6rem;
 }
 .header-bg {
   position: absolute;
   top: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   background: $color-primary;
   width: 100%;
+  max-width: $app-max-width;
   height: 14.5rem;
 }
 .header-page {
@@ -677,10 +700,13 @@ main {
 #Header {
   position: fixed;
   top: 0;
-  left: 0;
+  left: 50%;
   right: 0;
+  transform: translateX(-50%);
   background: $color-primary;
   color: $color-white;
+  width: 100%;
+  max-width: $app-max-width;
   height: $header-height;
   padding: 1rem;
   z-index: 2;
@@ -802,6 +828,7 @@ main {
   bottom: 0;
   transform: translateX(-50%);
   width: calc(100% - 2rem);
+  max-width: calc(48rem - 2rem);
   z-index: 1;
 
   .content {
@@ -844,6 +871,7 @@ main {
   border-top: 1px solid rgba($color: $color-white, $alpha: 0.4);
 
   .tab-menu {
+    cursor: pointer;
     flex: 1;
     display: flex;
     justify-content: center;
@@ -1008,7 +1036,8 @@ main {
         display: flex;
         column-count: auto;
         gap: 0.5rem;
-
+        height: 1.125rem;
+        overflow: hidden;
         .chip {
           max-width: 5rem;
           padding: 0.25rem 0.5rem;

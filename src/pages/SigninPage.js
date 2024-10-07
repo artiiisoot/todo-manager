@@ -149,64 +149,45 @@ export const SigninPage = () => {
   //   console.log("사인 업 상태 : ", isSignupStart);
   // }, [isLanding, isSigninStart, isSignupStart]);
   return (
-    <div id="LoginPage">
-      <div className="container">
-        {isLanding ? (
-          <div className="login">
-            <div className="title">
-              <h5 className="text-xl">Todo Manager</h5>
+    <div className="wrapper">
+      <div id="LoginPage">
+        <div className="container">
+          {isLanding ? (
+            <div className="login">
+              <div className="title">
+                <h5 className="text-xl">Todo Manager</h5>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="login">
-            <div className="title">
-              <h5 className="text-sm">Todo Manager</h5>
-              <h5 className="text-xl">
-                {isSigninStart ? "Sign in" : "Sign up"}
-              </h5>
-            </div>
+          ) : (
+            <div className="login">
+              <div className="title">
+                <h5 className="text-sm">Todo Manager</h5>
+                <h5 className="text-xl">
+                  {isSigninStart ? "Sign in" : "Sign up"}
+                </h5>
+              </div>
 
-            <div className="item-group">
-              <div className="input-group">
-                <div className="input">
-                  <input
-                    type="email"
-                    placeholder="EMAIL"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setError("");
-                    }}
-                    required
-                  />
-                </div>
-                <div className="input">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="PASSWORD"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      setError("");
-                    }}
-                    onKeyDown={handleKeyDown}
-                    required
-                  />
-                  <button
-                    className="icons material-icons"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                  >
-                    visibility
-                  </button>
-                </div>
-                {isSignupStart ? (
+              <div className="item-group">
+                <div className="input-group">
+                  <div className="input">
+                    <input
+                      type="email"
+                      placeholder="EMAIL"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        setError("");
+                      }}
+                      required
+                    />
+                  </div>
                   <div className="input">
                     <input
                       type={showPassword ? "text" : "password"}
-                      placeholder="PASSWORD CONFIRM"
-                      value={passwordConfirm}
+                      placeholder="PASSWORD"
+                      value={password}
                       onChange={(e) => {
-                        setPasswordConfirm(e.target.value);
+                        setPassword(e.target.value);
                         setError("");
                       }}
                       onKeyDown={handleKeyDown}
@@ -219,27 +200,50 @@ export const SigninPage = () => {
                       visibility
                     </button>
                   </div>
-                ) : null}
-                {error && <span className="error-msg fadeInDown">{error}</span>}
+                  {isSignupStart ? (
+                    <div className="input">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="PASSWORD CONFIRM"
+                        value={passwordConfirm}
+                        onChange={(e) => {
+                          setPasswordConfirm(e.target.value);
+                          setError("");
+                        }}
+                        onKeyDown={handleKeyDown}
+                        required
+                      />
+                      <button
+                        className="icons material-icons"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                      >
+                        visibility
+                      </button>
+                    </div>
+                  ) : null}
+                  {error && (
+                    <span className="error-msg fadeInDown">{error}</span>
+                  )}
+                </div>
               </div>
             </div>
+          )}
+
+          <div className="button-group">
+            <button className="btn-white" onClick={handleSubmit}>
+              {isLanding ? "Sign in" : "Confirm"}
+            </button>
+
+            <p>
+              {!isSignupStart
+                ? `Don’t have an account?${" "}`
+                : `Do you have an account?${" "}`}
+
+              <span onClick={changeMode}>
+                {isSignupStart ? "Sign in" : "Sign up"}
+              </span>
+            </p>
           </div>
-        )}
-
-        <div className="button-group">
-          <button className="btn-white" onClick={handleSubmit}>
-            {isLanding ? "Sign in" : "Confirm"}
-          </button>
-
-          <p>
-            {!isSignupStart
-              ? `Don’t have an account?${" "}`
-              : `Do you have an account?${" "}`}
-
-            <span onClick={changeMode}>
-              {isSignupStart ? "Sign in" : "Sign up"}
-            </span>
-          </p>
         </div>
       </div>
     </div>

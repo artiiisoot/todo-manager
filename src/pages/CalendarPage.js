@@ -8,6 +8,7 @@ import { useData } from "../provider/DataProvider";
 // REDUX
 import { useDispatch } from "react-redux";
 import { getHeaderState } from "../redux/reducers/headerReducer";
+import { setLoading } from "../redux/reducers/loadingReducer";
 
 // FIREBASE
 import { getAuth } from "firebase/auth";
@@ -46,6 +47,7 @@ export const CalendarPage = () => {
     if (user) {
       updateData(); // user, uid, urls가 변경될 때 데이터를 업데이트
       getAuth();
+      dispatch(setLoading(true));
     }
   }, [user, uid]); //
 

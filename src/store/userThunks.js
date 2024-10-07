@@ -6,8 +6,8 @@ import { updateProfile } from "firebase/auth";
 export const uploadProfileImage = createAsyncThunk(
   "user/uploadProfileImage",
   async ({ storage, db, user, image, uid }, { rejectWithValue }) => {
-    console.log("img", image);
-    console.log("user", user);
+    // console.log("img", image);
+    // console.log("user", user);
     try {
       const storageRef = ref(storage, `images/${uid}/profile/${image.name}`);
       const uploadTask = uploadBytesResumable(storageRef, image);
@@ -34,14 +34,14 @@ export const uploadProfileImage = createAsyncThunk(
       });
 
       // Update the user's authentication profile
-      await updateProfile(user.auth.currentUser, {
+      await updateProfile(user, {
         photoURL: downloadURL,
       });
 
-      return downloadURL; // Return the download URL
+      return { photoURL: downloadURL }; // photoURL을 반환하도록 수정
     } catch (error) {
       console.error("Error in uploadProfileImage:", error); // 에러 로그
-      return rejectWithValue(error);
+      return rejectWithValue("Failed to upload profile image. Please try again.");
     }
   }
 );

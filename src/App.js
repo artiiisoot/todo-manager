@@ -6,9 +6,6 @@ import { login, logout } from "./redux/reducers/authReducer";
 import {
   getAuth,
   onAuthStateChanged,
-  setPersistence,
-  signInWithEmailAndPassword,
-  browserSessionPersistence,
 } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 
@@ -86,11 +83,41 @@ function App() {
   }, [dispatch]);
 
   // useEffect(() => {
+  //   const auth = getAuth();
+
+  //   const handleLogout = () => {
+  //     auth
+  //       .signOut(auth)
+  //       .then(() => {
+  //         console.log("User logged out");
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error logging out:", error);
+  //       });
+  //   };
+
+  //   const handleBeforeUnload = () => {
+  //     handleLogout();
+  //   };
+
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, []);
+
+  // useEffect(() => {
   //   if (location.pathname === "/settings") {
   //     alert("준비중");
   //     navigate("/");
   //   }
   // }, [location]);
+
+  useEffect(() => {
+    if (location.pathname === "/") {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
 
   return (
     <Routes>

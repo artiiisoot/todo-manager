@@ -16,7 +16,7 @@ export const AppLayout = () => {
   }, [location]);
 
   return (
-    <>
+    <div id="ROOT">
       <Header></Header>
       
       <div className="wrapper">
@@ -24,6 +24,6 @@ export const AppLayout = () => {
       </div>
 
       {isHidden ? null : <Tabbar></Tabbar>}
-    </>
+    </div>
   );
 };

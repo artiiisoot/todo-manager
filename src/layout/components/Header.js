@@ -15,6 +15,7 @@ import {
 
 import { Navbar } from "./Navbar";
 import { useAuth } from "../../provider/AuthProvider";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export const Header = () => {
   const dispatch = useDispatch();
@@ -22,6 +23,7 @@ export const Header = () => {
   const db = getFirestore();
   const uid = useSelector((state) => state.auth.uid);
   const isNavbar = useSelector((state) => state.header.isNavbar);
+  const { photoURL } = useSelector((state) => state.user);
   const [isAlarm, setIsAlarm] = useState(false);
   // const [isNavbar, setIsNavbar] = useState(false);
 
@@ -56,7 +58,6 @@ export const Header = () => {
     e.stopPropagation();
     dispatch(setIsNavbar(true));
   }
-
   return (
     <>
       <div
@@ -70,7 +71,7 @@ export const Header = () => {
 
         <div className="user-thumb" onClick={openNavbar}>
           <div className="thumb-img button-effect">
-            <img src={user.photoURL} alt="" className="aspect-square" />
+            <img src={photoURL ? photoURL : user.photoURL} alt="" className="aspect-square" />
           </div>
 
           {isAlarm && <span className="dot"></span>}

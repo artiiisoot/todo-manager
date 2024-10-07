@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { setIsNavbar } from "../../redux/reducers/headerReducer";
-import { logout } from "../../redux/reducers/userReducer";
+import { logout } from "../../redux/reducers/authReducer";
 
 import { useDispatch } from "react-redux";
 

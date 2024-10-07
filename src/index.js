@@ -12,6 +12,11 @@ import { store } from "./redux/store";
 
 import { AuthProvider } from "./provider/AuthProvider";
 import { DataProvider } from "./provider/DataProvider";
+import { max } from "moment";
+
+function style() {
+  
+}
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

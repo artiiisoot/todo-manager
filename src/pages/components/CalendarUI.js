@@ -179,7 +179,7 @@ export const CalendarUI = ({ date, setDate, todaysData, projectsData }) => {
 
   // }
   function formattedDate(date) {
-    return moment(date).format("YYYY-MM-DD");
+    return moment(date).format("YYYY/MM/DD");
   }
 
   // 데이터를 로드하고 상태를 업데이트하는 함수
@@ -232,13 +232,13 @@ export const CalendarUI = ({ date, setDate, todaysData, projectsData }) => {
         tileContent={({ date, view }) => {
           let html = [];
           if (
-            markToday?.find((day) => day === moment(date).format("YYYY-MM-DD"))
+            markToday?.find((day) => day === moment(date).format("YYYY/MM/DD"))
           ) {
             html.push(<StyledDot key={`today-${formattedDate(date)}`} />);
           }
           if (
             markProject?.find(
-              (day) => day === moment(date).format("YYYY-MM-DD")
+              (day) => day === moment(date).format("YYYY/MM/DD")
             )
           ) {
             html.push(<StyledDot key={`project-${formattedDate}`} />);

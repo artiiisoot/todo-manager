@@ -25,12 +25,10 @@ const DataContext = createContext();
 export const DataProvider = ({ children }) => {
   const dispatch = useDispatch();
   const db = getFirestore();
-  const { loading, loadingImage } = useSelector((state) => state.loading);
   const [todaysData, setTodaysData] = useState([]);
   const [projectsData, setProjectsData] = useState([]);
   const { uid } = useAuth(); // AuthContext에서 uid 가져오기
-  const hasFetched = useRef(false); // 데이터를 이미 불러왔는지 추적하는 ref
-
+  
   const updateData = async () => {
     if (!uid) return; // uid가 없다면 로직 실행 안 함
     dispatch(setLoading(true)); // 로딩 상태 true로 설정

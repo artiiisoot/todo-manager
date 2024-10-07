@@ -4,7 +4,7 @@ import { uploadProfileImage } from "../../store/userThunks";
 let initialState = {
   displayName: "",
   // phoneNumber: "",
-  photoURL: "",
+  photoURL: null,
   url: null,
   status: "idle",
   error: null,
@@ -29,11 +29,12 @@ const userSlice = createSlice({
       })
       .addCase(uploadProfileImage.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.url = action.payload;
+        console.log(" action.payload.photoURL", action.payload.photoURL);
+        state.photoURL = action.payload.photoURL;
       })
       .addCase(uploadProfileImage.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message || "Failed to upload image";
+        state.error = action.payload;
       });
   },
 });
