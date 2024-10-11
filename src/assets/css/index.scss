@@ -88,7 +88,8 @@ body {
     // height: calc(100vh - #{$header-height});
     // height: 100vh;
     // padding-bottom: unset;
-    // height: calc(100dvh - 2rem);
+    min-height: calc(100dvh - 2rem);
+    height: 100%;
     background: $color-white;
 
     .title {
