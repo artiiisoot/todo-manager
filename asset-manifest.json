@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "https://artiiisoot.github.io/todo-manager/static/css/main.b8c00db6.css",
-    "main.js": "https://artiiisoot.github.io/todo-manager/static/js/main.bf52bc69.js",
+    "main.css": "https://artiiisoot.github.io/todo-manager/static/css/main.cd1723bf.css",
+    "main.js": "https://artiiisoot.github.io/todo-manager/static/js/main.07f70856.js",
     "static/js/206.0e3e4954.chunk.js": "https://artiiisoot.github.io/todo-manager/static/js/206.0e3e4954.chunk.js",
     "static/media/material-icons-two-tone.woff": "https://artiiisoot.github.io/todo-manager/static/media/material-icons-two-tone.3baa5b8f3469222b822d.woff",
     "static/media/material-icons-two-tone.woff2": "https://artiiisoot.github.io/todo-manager/static/media/material-icons-two-tone.4ef4218c522f1eb6b5b1.woff2",
@@ -17,7 +17,7 @@
     "static/media/profile_default.svg": "https://artiiisoot.github.io/todo-manager/static/media/profile_default.eaeb49228bdbf7be6e115fe78bd1e52a.svg"
   },
   "entrypoints": [
-    "static/css/main.b8c00db6.css",
-    "static/js/main.bf52bc69.js"
+    "static/css/main.cd1723bf.css",
+    "static/js/main.07f70856.js"
   ]
 }
