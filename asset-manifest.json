@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "https://artiiisoot.github.io/todo-manager/static/css/main.936545ef.css",
+    "main.css": "https://artiiisoot.github.io/todo-manager/static/css/main.d72fc464.css",
     "main.js": "https://artiiisoot.github.io/todo-manager/static/js/main.bf52bc69.js",
     "static/js/206.0e3e4954.chunk.js": "https://artiiisoot.github.io/todo-manager/static/js/206.0e3e4954.chunk.js",
     "static/media/material-icons-two-tone.woff": "https://artiiisoot.github.io/todo-manager/static/media/material-icons-two-tone.3baa5b8f3469222b822d.woff",
@@ -17,7 +17,7 @@
     "static/media/profile_default.svg": "https://artiiisoot.github.io/todo-manager/static/media/profile_default.eaeb49228bdbf7be6e115fe78bd1e52a.svg"
   },
   "entrypoints": [
-    "static/css/main.936545ef.css",
+    "static/css/main.d72fc464.css",
     "static/js/main.bf52bc69.js"
   ]
 }
