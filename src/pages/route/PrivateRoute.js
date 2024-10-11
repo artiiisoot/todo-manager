@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Navigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { LoadingUI } from "../components/LoadingUI";
 
 export const PrivateRoute = ({ loading, children, requiredLevel }) => {
-  const token = useSelector((state) => state.auth.token);
-  const level = useSelector((state) => state.auth.level);
+  const { token, level } = useSelector((state) => state.auth);
 
   if (loading) return <LoadingUI />;
 

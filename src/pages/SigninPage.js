@@ -81,7 +81,7 @@ export const SigninPage = (ref) => {
 
         // Firebase로부터 사용자 토큰을 가져옵니다.
         const token = await user.getIdToken();
-        localStorage.setItem("accessToken", token);
+        sessionStorage.setItem("accessToken", token);
         setEmail("");
         setPassword("");
         // 로그인 액션을 디스패치합니다. 여기서 올바른 uid와 token을 전달합니다.
@@ -116,7 +116,7 @@ export const SigninPage = (ref) => {
         );
         const user = userCredential.user;
         const token = await user.getIdToken();
-        localStorage.setItem("accessToken", token);
+        sessionStorage.setItem("accessToken", token);
 
         const userLevel = 1; // 기본 사용자 레벨 설정 (1은 일반 사용자, 10은 관리자 등)
         await setDoc(doc(db, "users", user.uid), {

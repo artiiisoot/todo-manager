@@ -22,7 +22,7 @@ export const Navbar = ({ isNavList }) => {
   }
   function handleLogout() {
     auth.signOut();
-    localStorage.removeItem("accessToken");
+    sessionStorage.removeItem("accessToken");
     dispatch(logout());
   }
 

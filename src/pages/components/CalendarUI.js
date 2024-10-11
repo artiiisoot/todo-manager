@@ -184,9 +184,9 @@ export const CalendarUI = ({ date, setDate, todaysData, projectsData }) => {
 
   // 데이터를 로드하고 상태를 업데이트하는 함수
   useEffect(() => {
-    const savedMarkToday = JSON.parse(localStorage.getItem("markToday")) || [];
+    const savedMarkToday = JSON.parse(sessionStorage.getItem("markToday")) || [];
     const savedMarkProject =
-      JSON.parse(localStorage.getItem("markProject")) || [];
+      JSON.parse(sessionStorage.getItem("markProject")) || [];
 
     const markedTodayDates = todaysData.map((today) => today.createDate);
     const markedProjectDates = projectsData.map(
@@ -203,8 +203,8 @@ export const CalendarUI = ({ date, setDate, todaysData, projectsData }) => {
     setMarkToday(updatedMarkToday);
     setMarkProject(updatedMarkProject);
 
-    localStorage.setItem("markToday", JSON.stringify(updatedMarkToday));
-    localStorage.setItem("markProject", JSON.stringify(updatedMarkProject));
+    sessionStorage.setItem("markToday", JSON.stringify(updatedMarkToday));
+    sessionStorage.setItem("markProject", JSON.stringify(updatedMarkProject));
   }, [todaysData, projectsData]);
 
   return (

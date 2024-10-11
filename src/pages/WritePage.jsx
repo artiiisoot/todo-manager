@@ -238,7 +238,7 @@ export const WritePage = () => {
                 <SelectOption id="group" items={taskGroup} />
               </li>
 
-              <li className="flex items-start">
+              <li className="flex items-center">
                 <p className="title">Tags</p>
                 <SelectOption id="tags" items={taskTags} />
               </li>
@@ -262,7 +262,7 @@ export const WritePage = () => {
 
         {taskCategory === "Project" && (
           <div className="upload">
-            <div className="grid grid-cols-4  gap-4">
+            <div className="grid grid-cols-4 gap-4">
               {prevImages.length > 3 ? null : (
                 <label htmlFor="file">
                   <button
