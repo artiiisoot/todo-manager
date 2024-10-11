@@ -59,7 +59,7 @@ export const CalendarPage = () => {
     <div id="Calendar">
       <div className="header-bg"></div>
 
-      <main className="flex flex-col gap-8">
+      <main className="calendar flex flex-col gap-8">
         <CalendarUI
           date={date}
           setDate={setDate}
@@ -70,7 +70,7 @@ export const CalendarPage = () => {
         <div className="content calendar flex flex-col gap-2">
           <div className="content-title flex items-center justify-between">
             <p>Todays</p>
-            <button onClick={() => navigate(`/tasks?tab=Todays`)}>
+            <button onClick={() => navigate(`/list?tab=Todays`)}>
               See All
             </button>
           </div>
@@ -101,7 +101,7 @@ export const CalendarPage = () => {
         <div className="content calendar flex flex-col gap-2">
           <div className="content-title flex items-center justify-between">
             <p>Projects</p>
-            <button onClick={() => navigate(`/tasks?tab=Projects`)}>
+            <button onClick={() => navigate(`/list?tab=Projects`)}>
               See All
             </button>
           </div>

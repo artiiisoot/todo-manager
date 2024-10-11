@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-//FIREBASE AUTH
+// PROVIDER
 import { useAuth } from "../provider/AuthProvider";
 import { useData } from "../provider/DataProvider";
 
+// REDUX
 import { useDispatch, useSelector } from "react-redux";
 import { getCategory, resetState } from "../redux/reducers/taskReducer";
+import { getHeaderState } from "../redux/reducers/headerReducer";
+import { setLoading } from "../redux/reducers/loadingReducer";
 
+// FIREBASE
 import {
   getFirestore,
   collection,
@@ -23,21 +27,23 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 
+// COMPONENTS
 import { DetailHeader } from "./components/DetailHeader";
 import { SelectOption } from "./components/SelectOption";
 import { DatePickerComponent } from "./components/DatePickerComponent";
 import { DialogAddStates } from "./dialogs/DialogAddStates";
 import { DialogAddTags } from "./dialogs/DialogAddTags";
 import { DialogAddGroup } from "./dialogs/DialogAddGroup";
-import { getHeaderState } from "../redux/reducers/headerReducer";
-import { setLoading } from "../redux/reducers/loadingReducer";
 import { LoadingUI } from "./components/LoadingUI";
+
+import useInputScroll from "../utils/useInputScroll";
 
 export const WritePage = () => {
   const { uid } = useAuth();
   // const { updateData } = useData();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const { title: headerTitle, type: headerType } = useSelector(
     (state) => state.header
   );
@@ -56,6 +62,8 @@ export const WritePage = () => {
 
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDesc, setTaskDesc] = useState("");
+  const firstInputRef = useRef(null);
+  const secondInputRef = useRef(null);
   const imageRef = useRef(null);
   const [prevImages, setPrevImages] = useState([]);
   const [images, setImages] = useState([]);
@@ -180,13 +188,16 @@ export const WritePage = () => {
     dispatch(resetState());
   }, []);
 
+  useInputScroll(firstInputRef, secondInputRef);
+
   return (
-    <>
+    <div id="Write">
       <DetailHeader title={headerTitle} type={headerType} />
 
-      <main className="document">
+      <main>
         <div className="title">
           <input
+            ref={firstInputRef}
             type="text"
             placeholder="Untitle"
             value={taskTitle}
@@ -227,7 +238,7 @@ export const WritePage = () => {
                 <SelectOption id="group" items={taskGroup} />
               </li>
 
-              <li className="flex items-center">
+              <li className="flex items-start">
                 <p className="title">Tags</p>
                 <SelectOption id="tags" items={taskTags} />
               </li>
@@ -239,6 +250,7 @@ export const WritePage = () => {
           <p>Description</p>
 
           <textarea
+            ref={secondInputRef}
             name="description"
             id="description"
             className="outlined flex-1"
@@ -295,6 +307,6 @@ export const WritePage = () => {
       {modalOpen && modalType === "tag" ? <DialogAddTags /> : null}
 
       {loading && <LoadingUI />}
-    </>
+    </div>
   );
 };

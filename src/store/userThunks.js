@@ -41,7 +41,23 @@ export const uploadProfileImage = createAsyncThunk(
       return { photoURL: downloadURL }; // photoURL을 반환하도록 수정
     } catch (error) {
       console.error("Error in uploadProfileImage:", error); // 에러 로그
-      return rejectWithValue("Failed to upload profile image. Please try again.");
+      return rejectWithValue(
+        "Failed to upload profile image. Please try again."
+      );
+    }
+  }
+);
+
+export const updateDisplayName = createAsyncThunk(
+  "user/updateProfile",
+  async ({ displayName, user }, { rejectWithValue }) => {
+    try {
+      await updateProfile(user, {
+        displayName: displayName,
+      });
+      return { displayName };
+    } catch (error) {
+      return rejectWithValue("Failed");
     }
   }
 );

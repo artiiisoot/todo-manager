@@ -37,10 +37,10 @@ export const SettingsPage = () => {
   }, [dispatch]);
 
   return (
-    <>
+    <div id="Settings">
       <DetailHeader title={headerTitle} type={headerType} />
 
-      <main className="settings">
+      <main>
         <ul>
           {list.map((item, idx) => (
             <li onClick={() => handlePage(item.name)} key={idx}>
@@ -50,11 +50,11 @@ export const SettingsPage = () => {
               <p>{item.name}</p>
             </li>
           ))}
-          <li className="ver">
+          {/* <li className="ver">
             <p>ver.0.0.0</p>
-          </li>
+          </li> */}
         </ul>
       </main>
-    </>
+    </div>
   );
 };

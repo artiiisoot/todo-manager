@@ -28,6 +28,9 @@ export const StyledDatePickerWrapper = styled.div`
     .react-datepicker__view-calendar-icon {
       input {
         padding-left: 2rem;
+        padding-top: 0;
+        padding-bottom: 0;
+        height: unset;
         color: #777;
       }
     }

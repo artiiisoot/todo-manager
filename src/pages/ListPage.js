@@ -9,7 +9,7 @@ import { getFirestore, collection, getDocs } from "firebase/firestore";
 import { TodayCard } from "./components/TodayCard";
 import { ProjectCard } from "./components/ProjectCard ";
 
-export const TasksPage = () => {
+export const ListPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -161,7 +161,7 @@ export const TasksPage = () => {
   }, [location.search]);
 
   return (
-    <div id="Tasks">
+    <div id="List">
       <div className="header-page">
         <div className="tasks-progress">
           <div className="content-title flex items-center">
@@ -202,7 +202,7 @@ export const TasksPage = () => {
         </div>
       </div>
 
-      <main className="pages">
+      <main>
         <div className="content today flex flex-col gap-2">
           {currentTab === "Todays" && todaysData && todaysData.length > 0 ? (
             <>

@@ -65,10 +65,18 @@ export const DialogAddTags = () => {
   useEffect(() => {
     // console.log("tagList", tagList);
     onSnapshot(dbTags, (snapshot) => {
-      const getTagData = snapshot.docs.map((doc) => ({
+      let getTagData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
+
+      getTagData = getTagData.sort((a, b) => {
+        return a.timestamp < b.timestamp
+          ? -1
+          : a.timestamp > b.timestamp
+          ? 1
+          : 0;
+      });
 
       return setTagData(getTagData);
     });

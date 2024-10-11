@@ -9,8 +9,9 @@ import { getAuth } from "firebase/auth";
 
 import { resetState, setImage } from "../../redux/reducers/taskReducer";
 import { useAuth } from "../../provider/AuthProvider";
-import { uploadProfileImage } from "../../store/userThunks";
+import { updateDisplayName, uploadProfileImage } from "../../store/userThunks";
 import { setLoading } from "../../redux/reducers/loadingReducer";
+import { setIsChangeDisplayName } from "../../redux/reducers/userReducer";
 
 export const DetailHeader = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export const DetailHeader = () => {
   const { title: headerTitle, type: headerType } = useSelector(
     (state) => state.header
   );
+  const { displayName } = useSelector((state) => state.user);
 
   const image = useSelector((state) => state.task.value.image);
   const { url, status, error } = useSelector((state) => state.user);
@@ -80,7 +82,7 @@ export const DetailHeader = () => {
           console.log("File deleted successfully");
         } catch (error) {
           console.error("Error deleting file:", error);
-        }finally {
+        } finally {
           dispatch(setLoading(false));
         }
         navigate(-1);
@@ -96,7 +98,10 @@ export const DetailHeader = () => {
     if (image) {
       dispatch(uploadProfileImage({ storage, db, user, image, uid }));
       dispatch(resetState());
-      navigate('/')
+      navigate("/");
+    } else if (displayName) {
+      dispatch(updateDisplayName({ user, displayName }));
+      dispatch(setIsChangeDisplayName(false))
     } else {
       return;
     }

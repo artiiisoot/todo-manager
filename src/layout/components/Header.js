@@ -42,9 +42,9 @@ export const Header = () => {
     },
     {
       id: 3,
-      name: "Tasks",
+      name: "List",
       active: false,
-      route: "/tasks?tab=Todays",
+      route: "/list?tab=Todays",
     },
     {
       id: 4,
@@ -58,6 +58,10 @@ export const Header = () => {
     e.stopPropagation();
     dispatch(setIsNavbar(true));
   }
+
+  useEffect(() => {
+    console.log("user", user);
+  }, [user]);
   return (
     <>
       <div
@@ -65,13 +69,17 @@ export const Header = () => {
         className="header-content flex flex-row items-center justify-between"
       >
         <div className="profile-text flex flex-col">
-          <p>UserName</p>
+          <p>{user.displayName}</p>
           <p>You have 00 Tasks</p>
         </div>
 
         <div className="user-thumb" onClick={openNavbar}>
           <div className="thumb-img button-effect">
-            <img src={photoURL ? photoURL : user.photoURL} alt="" className="aspect-square" />
+            <img
+              src={user.photoURL ? user.photoURL : photoURL}
+              alt=""
+              className="aspect-square"
+            />
           </div>
 
           {isAlarm && <span className="dot"></span>}

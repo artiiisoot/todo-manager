@@ -4,6 +4,7 @@ let initialState = {
   uid: "",
   token: "",
   level: "",
+  displayName: "",
 };
 
 const authSlice = createSlice({
@@ -12,7 +13,7 @@ const authSlice = createSlice({
   reducers: {
     login(state, action) {
       console.log(action.payload);
-      
+
       state.uid = action.payload.uid;
       state.token = action.payload.token;
       state.level = action.payload.level;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -6,16 +6,22 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   getAuth,
+  onAuthStateChanged,
+  updateProfile,
 } from "firebase/auth";
 
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 
 import { login } from "../redux/reducers/authReducer";
+import useInputScroll from "../utils/useInputScroll";
 
-export const SigninPage = () => {
+export const SigninPage = (ref) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const db = getFirestore();
+  const firstInputRef = useRef(null);
+  const secondInputRef = useRef(null);
+  const thirdInputRef = useRef(null);
   const [isLanding, setIsLanding] = useState(true);
   const [isSigninStart, setIsSigninStart] = useState(false);
   const [isSignupStart, setIsSignupStart] = useState(false);
@@ -117,13 +123,27 @@ export const SigninPage = () => {
           uid: user.uid,
           email: user.email,
           level: userLevel,
+          displayName: user.email,
           createdAt: new Date().toISOString(),
+        });
+
+        await updateProfile(user, {
+          displayName: user.email,
         });
 
         setEmail("");
         setPassword("");
         setPasswordConfirm("");
-        dispatch(login({ uid: user.uid, token, level: userLevel }));
+        // dispatch(
+        //   login({
+        //     uid: user.uid,
+        //     token,
+        //     level: userLevel,
+        //     displayName: user.email,
+        //   })
+        // );
+
+        // dispatch(updateProfile({ db, user, uid}))
 
         // alert("회원가입 성공!");
         navigate("/");
@@ -140,14 +160,9 @@ export const SigninPage = () => {
     }
   }
 
-  useEffect(() => {
-    // document.addEventListener('keydown', )
-  });
-  // useEffect(() => {
-  //   console.log("랜딩 상태 : ", isLanding);
-  //   console.log("사인 인 상태 : ", isSigninStart);
-  //   console.log("사인 업 상태 : ", isSignupStart);
-  // }, [isLanding, isSigninStart, isSignupStart]);
+  // Safari(iOS) 가상키보드 : INPUT이 활성화 됐을때 스크롤(터치무브)하면 INPUT 비활성화
+  useInputScroll(firstInputRef, secondInputRef, thirdInputRef);
+
   return (
     <div className="wrapper">
       <div id="LoginPage">
@@ -171,6 +186,8 @@ export const SigninPage = () => {
                 <div className="input-group">
                   <div className="input">
                     <input
+                      // ref={emailRef}
+                      ref={firstInputRef}
                       type="email"
                       placeholder="EMAIL"
                       value={email}
@@ -183,6 +200,8 @@ export const SigninPage = () => {
                   </div>
                   <div className="input">
                     <input
+                      // ref={passwordRef}
+                      ref={secondInputRef}
                       type={showPassword ? "text" : "password"}
                       placeholder="PASSWORD"
                       value={password}
@@ -203,6 +222,8 @@ export const SigninPage = () => {
                   {isSignupStart ? (
                     <div className="input">
                       <input
+                        // ref={passwordRef}
+                        ref={thirdInputRef}
                         type={showPassword ? "text" : "password"}
                         placeholder="PASSWORD CONFIRM"
                         value={passwordConfirm}

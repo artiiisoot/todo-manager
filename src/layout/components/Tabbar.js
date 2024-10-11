@@ -28,7 +28,7 @@ export const Tabbar = () => {
       id: 3,
       name: "format_list_bulleted",
       active: false,
-      path: "/tasks",
+      path: "/list",
     },
     {
       id: 4,
@@ -65,9 +65,9 @@ export const Tabbar = () => {
   }
 
   useEffect(() => {
-    // 현재 경로가 "/tasks"일 때 "/tasks?tab=Todays"로 리디렉트
-    if (location.pathname === "/tasks" && !location.search.includes("tab=")) {
-      navigate("/tasks?tab=Todays", { replace: true });
+    // 현재 경로가 "/list"일 때 "/list?tab=Todays"로 리디렉트
+    if (location.pathname === "/list" && !location.search.includes("tab=")) {
+      navigate("/list?tab=Todays", { replace: true });
     }
   }, [location, navigate]);
 

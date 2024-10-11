@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -26,24 +26,27 @@ import { DialogAddGroup } from "./dialogs/DialogAddGroup";
 
 import { formatDate } from "../utils/dateUtils";
 import { getHeaderState } from "../redux/reducers/headerReducer";
+import useInputScroll from "../utils/useInputScroll";
 
 export const DetailPage = () => {
   const dispatch = useDispatch();
   const uid = useSelector((state) => state.auth.uid);
-  const headerTitle = useSelector((state) => state.header.title);
-  const headerType = useSelector((state) => state.header.type);
-  const modalType = useSelector((state) => state.modal.value.type);
-  const modalOpen = useSelector((state) => state.modal.value.open);
-  const categoryList = useSelector((state) => state.task.value.categoryList);
-  const taskCategory = useSelector((state) => state.task.value.category);
-  const taskState = useSelector((state) => state.task.value.state);
-  const taskGroup = useSelector((state) => state.task.value.group);
-  const taskTags = useSelector((state) => state.task.value.tags);
-  const taskCreateDate = useSelector((state) => state.task.value.createDate);
+  const { headerTitle, headerType } = useSelector((state) => state.header);
+
+  const { modalType, modalOpen } = useSelector((state) => state.modal.value);
+  const {
+    categoryList,
+    category: taskCategory,
+    state: taskState,
+    group: taskGroup,
+    tags: taskTags,
+    createDate: taskCreateDate,
+  } = useSelector((state) => state.task.value);
   const selectedDate = useSelector((state) => state.date.selectedDate);
 
-  const loading = useSelector(state => state.loading.loading)
-
+  const loading = useSelector((state) => state.loading.loading);
+  const firstInputRef = useRef(null);
+  const secondInputRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -174,12 +177,16 @@ export const DetailPage = () => {
     }
   }, [itemData, dispatch, categoryList]);
 
+  useInputScroll(firstInputRef, secondInputRef);
+
   return (
-    <>
+    <div id="Write">
       <DetailHeader title={headerTitle} type={headerType} />
-      <main className="document">
+      
+      <main>
         <div className="title">
           <input
+            ref={firstInputRef}
             type="text"
             placeholder="Untitle"
             value={taskTitle}
@@ -220,7 +227,7 @@ export const DetailPage = () => {
                 <SelectOption id="group" items={taskGroup} />
               </li>
 
-              <li className="flex items-center">
+              <li className="flex items-start">
                 <p className="title">Tags</p>
                 <SelectOption id="tags" items={taskTags} />
               </li>
@@ -231,6 +238,7 @@ export const DetailPage = () => {
         <div className="description flex flex-col">
           <p>Description</p>
           <textarea
+            ref={secondInputRef}
             name="description"
             id="description"
             className="outlined flex-1"
@@ -263,6 +271,6 @@ export const DetailPage = () => {
       {modalOpen && modalType === "tag" ? (
         <DialogAddTags item={itemData?.tags} />
       ) : null}
-    </>
+    </div>
   );
 };

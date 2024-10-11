@@ -5,6 +5,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setImage } from "../redux/reducers/taskReducer";
 import { getHeaderState } from "../redux/reducers/headerReducer";
+import {
+  setIsChangeDisplayName,
+  setDisplayName,
+} from "../redux/reducers/userReducer";
+
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 
 //COMPONENT
 import { DetailHeader } from "./components/DetailHeader";
@@ -12,10 +19,15 @@ import { useAuth } from "../provider/AuthProvider";
 
 export const AccountPage = () => {
   const dispatch = useDispatch();
+  const db = getFirestore();
   const { headerTitle, headerType } = useSelector((state) => state.header);
+  const { displayName, photoURL, isChangeDisplayName } = useSelector(
+    (state) => state.user
+  );
   const imageRef = useRef(null);
   const [prevImages, setPrevImages] = useState("");
-  const [displayName, setDisplayName] = useState("닉네임을 설정하세요");
+  // const [chageDisplayName, setChangeDisplayName] = useState(false);
+  // const [displayName, setDisplayName] = useState("닉네임을 설정하세요");
   const { user } = useAuth();
 
   function onFileChange(e) {
@@ -34,42 +46,27 @@ export const AccountPage = () => {
     reader.readAsDataURL(theFile);
     dispatch(setImage(theFile));
   }
+  function handleChangeDisplayName() {
+    dispatch(setIsChangeDisplayName(true));
+  }
+  function cancleChangeDisplayName() {
+    dispatch(setIsChangeDisplayName(false));
+    dispatch(setDisplayName({ displayName: "" }));
+  }
 
-  // function handleSubmit() {
-  //   const storageRef = ref(storage, `images/${uid}/profile/${image.name}`);
-  //   const uploadTask = uploadBytesResumable(storageRef, image);
-  //   new Promise((resolve, reject) => {
-  //     uploadTask.on(
-  //       "state_success",
-  //       null,
-  //       (error) => {
-  //         console.error(error);
-  //         reject(error);
-  //       },
-  //       async () => {
-  //         const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-  //         await updateDoc(doc(db, "users", uid), {
-  //           profile: downloadURL,
-  //         });
-  //         await updateProfile(auth.currentUser, {
-  //           photoURL: downloadURL,
-  //         });
-  //         setUrl(downloadURL);
-  //         resolve("downloadURL", downloadURL);
-  //       }
-  //     );
-  //   });
-  // }
+  useEffect(() => {
+    console.log("isChangeDisplayName", isChangeDisplayName);
+  }, [isChangeDisplayName]);
 
   useEffect(() => {
     dispatch(getHeaderState({ title: "Account", type: "account" }));
   }, [dispatch]);
 
   return (
-    <>
+    <div id="Settings">
       <DetailHeader title={headerTitle} type={headerType} />
 
-      <main className="settings">
+      <main>
         <div className="top">
           <label className="profile" htmlFor="profile-img">
             <div className="profile-thumb">
@@ -78,7 +75,7 @@ export const AccountPage = () => {
               ) : user.photoURL ? (
                 <img src={user.photoURL} alt="" />
               ) : (
-                <img src="https://placehold.co/400" alt="" />
+                <img src={photoURL} alt="" />
               )}
               <button>편집</button>
             </div>
@@ -95,26 +92,52 @@ export const AccountPage = () => {
         </div>
 
         <div className="list-group">
-          <div className="list">
+          {/* <div className="list">
             <p>닉네임</p>
-            {/* <input>{user.displayName ? "" : "닉네임을 설정하세요"}</input> */}
+            <input>{user.displayName ? "" : "닉네임을 설정하세요"}</input>
             <input
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
             />
-          </div>
+          </div> */}
           <div className="list">
-            <p>테마</p>
+            <p>닉네임</p>
+
             <div className="list-inner">
-              <h5>Thema Name</h5>
-              <button className="btn-edit">변경</button>
+              {isChangeDisplayName ? (
+                <>
+                  <input
+                    type="text"
+                    placeholder="닉네임을 설정하세요"
+                    onChange={(e) =>
+                      dispatch(setDisplayName({ displayName: e.target.value }))
+                    }
+                  />
+                  <button
+                    className="btn-edit"
+                    onClick={cancleChangeDisplayName}
+                  >
+                    취소
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h5>{user.displayName}</h5>
+                  <button
+                    className="btn-edit"
+                    onClick={handleChangeDisplayName}
+                  >
+                    변경
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
 
         {/* <button onClick={handleSubmit}>완료</button> */}
       </main>
-    </>
+    </div>
   );
 };

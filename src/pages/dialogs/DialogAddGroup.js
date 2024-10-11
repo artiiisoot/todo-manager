@@ -50,6 +50,14 @@ export const DialogAddGroup = () => {
     setIsGroup("");
   }
 
+  async function handleDeleteGroupList(e, item) {
+    e.preventDefault();
+
+    if (taskGroup.name === item) {
+      dispatch(getGroup(null));
+    }
+  }
+
   async function handleDeleteState(e, id) {
     e.stopPropagation();
     try {
@@ -61,10 +69,18 @@ export const DialogAddGroup = () => {
 
   useEffect(() => {
     onSnapshot(dbGroup, (snapshot) => {
-      const getGroupData = snapshot.docs.map((doc) => ({
+      let getGroupData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
+
+      getGroupData = getGroupData.sort((a, b) => {
+        return a.timestamp < b.timestamp
+          ? -1
+          : a.timestamp > b.timestamp
+          ? 1
+          : 0;
+      });
 
       return setGroupData(getGroupData);
     });
@@ -83,7 +99,7 @@ export const DialogAddGroup = () => {
                 <p className={taskGroup.name}>{taskGroup.name}</p>
                 <button
                   className="icons icons-sm material-icons-outlined"
-                  // onClick={(e) => handleDeleteStateList(e, taskState.name)}
+                  onClick={(e) => handleDeleteGroupList(e, taskGroup.name)}
                 >
                   close
                 </button>

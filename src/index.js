@@ -2,7 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 // import "./assets/css/index.scss";
 import "./assets/css/index.scss";
-import "react-loading-skeleton/dist/skeleton.css"; 
+import "react-loading-skeleton/dist/skeleton.css";
+import '@material-design-icons/font';
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "./firebase";
@@ -12,11 +13,6 @@ import { store } from "./redux/store";
 
 import { AuthProvider } from "./provider/AuthProvider";
 import { DataProvider } from "./provider/DataProvider";
-import { max } from "moment";
-
-function style() {
-  
-}
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

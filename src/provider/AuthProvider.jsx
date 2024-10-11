@@ -8,7 +8,6 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [uid, setUid] = useState(null);
-  const [photoURL, setPhotoURL] = useState(null);
   // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,10 +16,6 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setUid(user?.uid);
-      setPhotoURL(user?.photoURL);
-
-      console.log("user.uid", user?.uid);
-      console.log("user.photoURL", user?.photoURL);
 
       // setLoading(false); // 유저 상태를 확인한 후 로딩 완료
     });

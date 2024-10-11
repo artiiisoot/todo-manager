@@ -3,10 +3,7 @@ import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { login, logout } from "./redux/reducers/authReducer";
 
-import {
-  getAuth,
-  onAuthStateChanged,
-} from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 
 import { AppLayout } from "./layout/AppLayout";
@@ -14,7 +11,7 @@ import { PrivateRoute } from "./pages/route/PrivateRoute";
 import { HomePage } from "./pages/HomePage";
 import { CalendarPage } from "./pages/CalendarPage";
 import { WritePage } from "./pages/WritePage";
-import { TasksPage } from "./pages/TasksPage";
+import { ListPage } from "./pages/ListPage";
 import { DetailPage } from "./pages/DetailPage";
 import { DataBase } from "./pages/DataBase";
 import { SigninPage } from "./pages/SigninPage";
@@ -82,39 +79,8 @@ function App() {
     });
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   const auth = getAuth();
-
-  //   const handleLogout = () => {
-  //     auth
-  //       .signOut(auth)
-  //       .then(() => {
-  //         console.log("User logged out");
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error logging out:", error);
-  //       });
-  //   };
-
-  //   const handleBeforeUnload = () => {
-  //     handleLogout();
-  //   };
-
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   if (location.pathname === "/settings") {
-  //     alert("준비중");
-  //     navigate("/");
-  //   }
-  // }, [location]);
-
   useEffect(() => {
-    if (location.pathname === "/") {
+    if (location.pathname === "/" || location.pathname === "/list" ) {
       window.scrollTo(0, 0);
     }
   }, [location.pathname]);
@@ -130,7 +96,7 @@ function App() {
         }
       >
         <Route index element={<HomePage />} />
-        <Route path="tasks" element={<TasksPage />} />
+        <Route path="list" element={<ListPage />} />
         <Route path="calendar" element={<CalendarPage />} />
         <Route path="write" element={<WritePage />} />
         <Route path="detail" element={<DetailPage />} />

@@ -82,7 +82,7 @@ export const HomePage = () => {
             <div className={`content ${type.className}`} key={idx}>
               <div className="content-title flex items-center justify-between">
                 <p>{type.name}</p>
-                <button onClick={() => navigate(`/tasks?tab=${type.name}`)}>
+                <button onClick={() => navigate(`/list?tab=${type.name}`)}>
                   See All
                 </button>
               </div>
